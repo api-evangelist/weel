@@ -1,0 +1,163 @@
+generated: '2026-07-24'
+method: derived
+status: candidate
+source: openapi/weel-openapi.yml
+server:
+  name: weel
+  transport: http
+  note: No official Weel MCP server is published as of this review. Tool list derived one-per-operation
+    from the Weel Open API OpenAPI as a candidate surface.
+tools:
+- name: list_transactions
+  description: GET /v2/businesses/{client_id}/transactions
+  source_operation: openapi/weel-openapi.yml#listTransactions
+- name: get_transaction
+  description: GET /v2/businesses/{client_id}/transactions/{transaction_id}
+  source_operation: openapi/weel-openapi.yml#getTransaction
+- name: list_statements
+  description: GET /v1/businesses/{client_id}/statements
+  source_operation: openapi/weel-openapi.yml#listStatements
+- name: list_users
+  description: GET /v1/businesses/{client_id}/users
+  source_operation: openapi/weel-openapi.yml#listUsers
+- name: list_roles
+  description: GET /v1/businesses/{client_id}/roles
+  source_operation: openapi/weel-openapi.yml#listRoles
+- name: get_user
+  description: GET /v1/businesses/{client_id}/users/{user_id}
+  source_operation: openapi/weel-openapi.yml#getUser
+- name: update_user
+  description: PATCH /v1/businesses/{client_id}/users/{user_id}
+  source_operation: openapi/weel-openapi.yml#updateUser
+- name: delete_user
+  description: DELETE /v1/businesses/{client_id}/users/{user_id}
+  source_operation: openapi/weel-openapi.yml#deleteUser
+- name: list_invites
+  description: GET /v1/businesses/{client_id}/invites
+  source_operation: openapi/weel-openapi.yml#listInvites
+- name: create_invite
+  description: POST /v1/businesses/{client_id}/invites
+  source_operation: openapi/weel-openapi.yml#createInvite
+- name: cancel_invite
+  description: DELETE /v1/businesses/{client_id}/invites/{invite_id}
+  source_operation: openapi/weel-openapi.yml#cancelInvite
+- name: list_budget_members_by_user
+  description: GET /v1/businesses/{client_id}/users/{user_id}/budget-members
+  source_operation: openapi/weel-openapi.yml#listBudgetMembersByUser
+- name: list_budgets
+  description: GET /v1/businesses/{client_id}/budgets
+  source_operation: openapi/weel-openapi.yml#listBudgets
+- name: create_budget
+  description: POST /v1/businesses/{client_id}/budgets
+  source_operation: openapi/weel-openapi.yml#createBudget
+- name: get_budget
+  description: GET /v1/businesses/{client_id}/budgets/{budget_id}
+  source_operation: openapi/weel-openapi.yml#getBudget
+- name: update_budget
+  description: PATCH /v1/businesses/{client_id}/budgets/{budget_id}
+  source_operation: openapi/weel-openapi.yml#updateBudget
+- name: delete_budget
+  description: DELETE /v1/businesses/{client_id}/budgets/{budget_id}
+  source_operation: openapi/weel-openapi.yml#deleteBudget
+- name: list_budget_topups
+  description: GET /v1/businesses/{client_id}/budgets/{budget_id}/topups
+  source_operation: openapi/weel-openapi.yml#listBudgetTopups
+- name: create_budget_topup
+  description: POST /v1/businesses/{client_id}/budgets/{budget_id}/topups
+  source_operation: openapi/weel-openapi.yml#createBudgetTopup
+- name: list_budget_members
+  description: GET /v1/businesses/{client_id}/budgets/{budget_id}/members
+  source_operation: openapi/weel-openapi.yml#listBudgetMembers
+- name: create_budget_member
+  description: POST /v1/businesses/{client_id}/budgets/{budget_id}/members
+  source_operation: openapi/weel-openapi.yml#createBudgetMember
+- name: get_budget_member
+  description: GET /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}
+  source_operation: openapi/weel-openapi.yml#getBudgetMember
+- name: update_budget_member
+  description: PATCH /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}
+  source_operation: openapi/weel-openapi.yml#updateBudgetMember
+- name: delete_budget_member
+  description: DELETE /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}
+  source_operation: openapi/weel-openapi.yml#deleteBudgetMember
+- name: list_budget_owners
+  description: GET /v1/businesses/{client_id}/budgets/{budget_id}/owners
+  source_operation: openapi/weel-openapi.yml#listBudgetOwners
+- name: create_budget_owner
+  description: POST /v1/businesses/{client_id}/budgets/{budget_id}/owners
+  source_operation: openapi/weel-openapi.yml#createBudgetOwner
+- name: delete_budget_owner
+  description: DELETE /v1/businesses/{client_id}/budgets/{budget_id}/owners/{budget_owner_id}
+  source_operation: openapi/weel-openapi.yml#deleteBudgetOwner
+- name: list_budget_member_topups
+  description: GET /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}/topups
+  source_operation: openapi/weel-openapi.yml#listBudgetMemberTopups
+- name: create_budget_member_topup
+  description: POST /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}/topups
+  source_operation: openapi/weel-openapi.yml#createBudgetMemberTopup
+- name: list_balances
+  description: GET /v1/businesses/{client_id}/balance
+  source_operation: openapi/weel-openapi.yml#listBalances
+- name: list_custom_fields
+  description: GET /v1/businesses/{client_id}/custom-fields
+  source_operation: openapi/weel-openapi.yml#listCustomFields
+- name: create_custom_field
+  description: POST /v1/businesses/{client_id}/custom-fields
+  source_operation: openapi/weel-openapi.yml#createCustomField
+- name: get_custom_field
+  description: GET /v1/businesses/{client_id}/custom-fields/{custom_field_id}
+  source_operation: openapi/weel-openapi.yml#getCustomField
+- name: update_custom_field
+  description: PATCH /v1/businesses/{client_id}/custom-fields/{custom_field_id}
+  source_operation: openapi/weel-openapi.yml#updateCustomField
+- name: delete_custom_field
+  description: DELETE /v1/businesses/{client_id}/custom-fields/{custom_field_id}
+  source_operation: openapi/weel-openapi.yml#deleteCustomField
+- name: list_custom_field_options
+  description: GET /v1/businesses/{client_id}/custom-fields/{custom_field_id}/options
+  source_operation: openapi/weel-openapi.yml#listCustomFieldOptions
+- name: create_custom_field_option
+  description: POST /v1/businesses/{client_id}/custom-fields/{custom_field_id}/options
+  source_operation: openapi/weel-openapi.yml#createCustomFieldOption
+- name: update_custom_field_option
+  description: PATCH /v1/businesses/{client_id}/custom-fields/{custom_field_id}/options/{option_id}
+  source_operation: openapi/weel-openapi.yml#updateCustomFieldOption
+- name: delete_custom_field_option
+  description: DELETE /v1/businesses/{client_id}/custom-fields/{custom_field_id}/options/{option_id}
+  source_operation: openapi/weel-openapi.yml#deleteCustomFieldOption
+- name: list_custom_field_budgets
+  description: GET /v1/businesses/{client_id}/custom-fields/{custom_field_id}/budgets
+  source_operation: openapi/weel-openapi.yml#listCustomFieldBudgets
+- name: link_custom_field_budget
+  description: POST /v1/businesses/{client_id}/custom-fields/{custom_field_id}/budgets
+  source_operation: openapi/weel-openapi.yml#linkCustomFieldBudget
+- name: unlink_custom_field_budget
+  description: DELETE /v1/businesses/{client_id}/custom-fields/{custom_field_id}/budgets/{budget_id}
+  source_operation: openapi/weel-openapi.yml#unlinkCustomFieldBudget
+- name: list_accounting_codes
+  description: GET /v1/businesses/{client_id}/accounting-codes
+  source_operation: openapi/weel-openapi.yml#listAccountingCodes
+- name: upsert_accounting_code
+  description: POST /v1/businesses/{client_id}/accounting-codes
+  source_operation: openapi/weel-openapi.yml#upsertAccountingCode
+- name: delete_accounting_code
+  description: DELETE /v1/businesses/{client_id}/accounting-codes/{accounting_code_id}
+  source_operation: openapi/weel-openapi.yml#deleteAccountingCode
+- name: list_categories
+  description: GET /v1/businesses/{client_id}/categories
+  source_operation: openapi/weel-openapi.yml#listCategories
+- name: create_category
+  description: POST /v1/businesses/{client_id}/categories
+  source_operation: openapi/weel-openapi.yml#createCategory
+- name: update_category
+  description: PATCH /v1/businesses/{client_id}/categories/{category_id}
+  source_operation: openapi/weel-openapi.yml#updateCategory
+- name: delete_category
+  description: DELETE /v1/businesses/{client_id}/categories/{category_id}
+  source_operation: openapi/weel-openapi.yml#deleteCategory
+- name: list_tax_rates
+  description: GET /v1/businesses/{client_id}/tax-rates
+  source_operation: openapi/weel-openapi.yml#listTaxRates
+- name: get_tax_rate
+  description: GET /v1/businesses/{client_id}/tax-rates/{tax_rate_id}
+  source_operation: openapi/weel-openapi.yml#getTaxRate

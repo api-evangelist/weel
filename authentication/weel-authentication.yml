@@ -1,0 +1,35 @@
+generated: '2026-07-24'
+method: searched
+source: openapi/weel-openapi.yml
+docs: https://developer.letsweel.com/getting-started/authentication
+summary:
+  types:
+    - http
+  http_schemes:
+    - bearer
+  oauth2_flows: []
+  api_key_in: []
+schemes:
+  - name: BearerAuth
+    type: http
+    scheme: bearer
+    sources:
+      - openapi/weel-openapi.yml
+details:
+  token_type: API key (bearer)
+  header: 'Authorization: Bearer <token>'
+  creation: >-
+    Created in the Weel web app under Settings > API > Create New API Key
+    (https://app.letsweel.com/app/settings#api).
+  expiry: >-
+    Bearer tokens do not expire. They remain valid until revoked or replaced
+    (delete the token under Settings > API).
+  rotation: Manual — revoke and recreate in-app; no programmatic rotation endpoint.
+  oauth2: false
+  openid_connect: false
+  mtls: false
+  gating: API access is an Enterprise-plan capability.
+notes: >-
+  Single security scheme across all operations: HTTP bearer token. No OAuth2,
+  OpenID Connect, or mutual TLS is documented, and no OAuth/OIDC discovery
+  metadata is served — so there is no scope surface (hence no scopes/ artifact).

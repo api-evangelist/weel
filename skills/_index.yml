@@ -1,0 +1,16 @@
+generated: '2026-07-24'
+method: generated
+source: openapi/weel-openapi.yml + conventions/weel-conventions.yml + errors/weel-problem-types.yml
+skills:
+  - file: weel-provision-users.md
+    name: Provision and manage Weel users
+    api: openapi/weel-openapi.yml
+    operations: [createInvite, listInvites, cancelInvite, listUsers, getUser, updateUser, deleteUser, listRoles]
+  - file: weel-manage-budgets.md
+    name: Create and fund Weel budgets
+    api: openapi/weel-openapi.yml
+    operations: [createBudget, getBudget, updateBudget, listBudgets, createBudgetMember, listBudgetMembers, createBudgetOwner, createBudgetTopup, createBudgetMemberTopup, deleteBudget]
+  - file: weel-reconcile-transactions.md
+    name: Reconcile Weel transactions to the chart of accounts
+    api: openapi/weel-openapi.yml
+    operations: [listTransactions, getTransaction, listStatements, listAccountingCodes, upsertAccountingCode, listCategories, createCategory, listTaxRates, listCustomFields, linkCustomFieldBudget]

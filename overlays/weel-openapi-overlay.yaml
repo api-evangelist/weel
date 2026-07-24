@@ -1,0 +1,26 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Weel Open API
+  version: 1.0.0
+extends: openapi/weel-openapi.yml
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: weel
+      x-apievangelist-auth: HTTP bearer API key (Enterprise-plan gated)
+      x-apievangelist-pagination: offset/limit with count/next/previous/results envelope
+      x-apievangelist-idempotency: none documented
+      x-apievangelist-compliance: [SOC 2 Type 1, SOC 2 Type 2, ISO 27001:2022]
+      x-apievangelist-links:
+        docs: https://developer.letsweel.com/
+        authentication: https://developer.letsweel.com/getting-started/authentication
+        pagination: https://developer.letsweel.com/getting-started/pagination
+        trust_center: https://trust.letsweel.com/
+        change_log: https://letsweel.com/product-updates
+  - target: $.info.x-apievangelist-derived-artifacts
+    update:
+      conventions: conventions/weel-conventions.yml
+      errors: errors/weel-problem-types.yml
+      authentication: authentication/weel-authentication.yml
+      data_model: data-model/weel-data-model.yml
+      agentic_access: agentic-access/weel-agentic-access.yml

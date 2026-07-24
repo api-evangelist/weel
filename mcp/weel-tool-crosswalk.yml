@@ -1,0 +1,324 @@
+generated: '2026-07-24'
+method: derived
+source: mcp/weel-mcp.yml + openapi/weel-openapi.yml
+note: MCP tool list is a derived candidate (no published server), so every tool binds 1:1 to its backing
+  OpenAPI operation, inheriting that operation parameters + requestBody as its real inputSchema.
+surfaces:
+  openapi: openapi/weel-openapi.yml
+  graphql: null
+  mcp: candidate (derived, no hosted server)
+crosswalk:
+- tool: list_transactions
+  category: businesses
+  rest:
+  - listTransactions
+  binding: rest
+  confidence: high
+- tool: get_transaction
+  category: businesses
+  rest:
+  - getTransaction
+  binding: rest
+  confidence: high
+- tool: list_statements
+  category: businesses
+  rest:
+  - listStatements
+  binding: rest
+  confidence: high
+- tool: list_users
+  category: businesses
+  rest:
+  - listUsers
+  binding: rest
+  confidence: high
+- tool: list_roles
+  category: businesses
+  rest:
+  - listRoles
+  binding: rest
+  confidence: high
+- tool: get_user
+  category: businesses
+  rest:
+  - getUser
+  binding: rest
+  confidence: high
+- tool: update_user
+  category: businesses
+  rest:
+  - updateUser
+  binding: rest
+  confidence: high
+- tool: delete_user
+  category: businesses
+  rest:
+  - deleteUser
+  binding: rest
+  confidence: high
+- tool: list_invites
+  category: businesses
+  rest:
+  - listInvites
+  binding: rest
+  confidence: high
+- tool: create_invite
+  category: businesses
+  rest:
+  - createInvite
+  binding: rest
+  confidence: high
+- tool: cancel_invite
+  category: businesses
+  rest:
+  - cancelInvite
+  binding: rest
+  confidence: high
+- tool: list_budget_members_by_user
+  category: businesses
+  rest:
+  - listBudgetMembersByUser
+  binding: rest
+  confidence: high
+- tool: list_budgets
+  category: businesses
+  rest:
+  - listBudgets
+  binding: rest
+  confidence: high
+- tool: create_budget
+  category: businesses
+  rest:
+  - createBudget
+  binding: rest
+  confidence: high
+- tool: get_budget
+  category: businesses
+  rest:
+  - getBudget
+  binding: rest
+  confidence: high
+- tool: update_budget
+  category: businesses
+  rest:
+  - updateBudget
+  binding: rest
+  confidence: high
+- tool: delete_budget
+  category: businesses
+  rest:
+  - deleteBudget
+  binding: rest
+  confidence: high
+- tool: list_budget_topups
+  category: businesses
+  rest:
+  - listBudgetTopups
+  binding: rest
+  confidence: high
+- tool: create_budget_topup
+  category: businesses
+  rest:
+  - createBudgetTopup
+  binding: rest
+  confidence: high
+- tool: list_budget_members
+  category: businesses
+  rest:
+  - listBudgetMembers
+  binding: rest
+  confidence: high
+- tool: create_budget_member
+  category: businesses
+  rest:
+  - createBudgetMember
+  binding: rest
+  confidence: high
+- tool: get_budget_member
+  category: businesses
+  rest:
+  - getBudgetMember
+  binding: rest
+  confidence: high
+- tool: update_budget_member
+  category: businesses
+  rest:
+  - updateBudgetMember
+  binding: rest
+  confidence: high
+- tool: delete_budget_member
+  category: businesses
+  rest:
+  - deleteBudgetMember
+  binding: rest
+  confidence: high
+- tool: list_budget_owners
+  category: businesses
+  rest:
+  - listBudgetOwners
+  binding: rest
+  confidence: high
+- tool: create_budget_owner
+  category: businesses
+  rest:
+  - createBudgetOwner
+  binding: rest
+  confidence: high
+- tool: delete_budget_owner
+  category: businesses
+  rest:
+  - deleteBudgetOwner
+  binding: rest
+  confidence: high
+- tool: list_budget_member_topups
+  category: businesses
+  rest:
+  - listBudgetMemberTopups
+  binding: rest
+  confidence: high
+- tool: create_budget_member_topup
+  category: businesses
+  rest:
+  - createBudgetMemberTopup
+  binding: rest
+  confidence: high
+- tool: list_balances
+  category: businesses
+  rest:
+  - listBalances
+  binding: rest
+  confidence: high
+- tool: list_custom_fields
+  category: businesses
+  rest:
+  - listCustomFields
+  binding: rest
+  confidence: high
+- tool: create_custom_field
+  category: businesses
+  rest:
+  - createCustomField
+  binding: rest
+  confidence: high
+- tool: get_custom_field
+  category: businesses
+  rest:
+  - getCustomField
+  binding: rest
+  confidence: high
+- tool: update_custom_field
+  category: businesses
+  rest:
+  - updateCustomField
+  binding: rest
+  confidence: high
+- tool: delete_custom_field
+  category: businesses
+  rest:
+  - deleteCustomField
+  binding: rest
+  confidence: high
+- tool: list_custom_field_options
+  category: businesses
+  rest:
+  - listCustomFieldOptions
+  binding: rest
+  confidence: high
+- tool: create_custom_field_option
+  category: businesses
+  rest:
+  - createCustomFieldOption
+  binding: rest
+  confidence: high
+- tool: update_custom_field_option
+  category: businesses
+  rest:
+  - updateCustomFieldOption
+  binding: rest
+  confidence: high
+- tool: delete_custom_field_option
+  category: businesses
+  rest:
+  - deleteCustomFieldOption
+  binding: rest
+  confidence: high
+- tool: list_custom_field_budgets
+  category: businesses
+  rest:
+  - listCustomFieldBudgets
+  binding: rest
+  confidence: high
+- tool: link_custom_field_budget
+  category: businesses
+  rest:
+  - linkCustomFieldBudget
+  binding: rest
+  confidence: high
+- tool: unlink_custom_field_budget
+  category: businesses
+  rest:
+  - unlinkCustomFieldBudget
+  binding: rest
+  confidence: high
+- tool: list_accounting_codes
+  category: businesses
+  rest:
+  - listAccountingCodes
+  binding: rest
+  confidence: high
+- tool: upsert_accounting_code
+  category: businesses
+  rest:
+  - upsertAccountingCode
+  binding: rest
+  confidence: high
+- tool: delete_accounting_code
+  category: businesses
+  rest:
+  - deleteAccountingCode
+  binding: rest
+  confidence: high
+- tool: list_categories
+  category: businesses
+  rest:
+  - listCategories
+  binding: rest
+  confidence: high
+- tool: create_category
+  category: businesses
+  rest:
+  - createCategory
+  binding: rest
+  confidence: high
+- tool: update_category
+  category: businesses
+  rest:
+  - updateCategory
+  binding: rest
+  confidence: high
+- tool: delete_category
+  category: businesses
+  rest:
+  - deleteCategory
+  binding: rest
+  confidence: high
+- tool: list_tax_rates
+  category: businesses
+  rest:
+  - listTaxRates
+  binding: rest
+  confidence: high
+- tool: get_tax_rate
+  category: businesses
+  rest:
+  - getTaxRate
+  binding: rest
+  confidence: high
+mcp_only: []
+rest_only: []
+coverage:
+  tools_named: 51
+  tools_bound: 51
+  mcp_only: 0
+  rest_ops_total: 51
+  rest_ops_with_tool: 51

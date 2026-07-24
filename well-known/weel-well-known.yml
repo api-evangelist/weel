@@ -1,0 +1,39 @@
+generated: '2026-07-24'
+method: searched
+source: live probes of /.well-known/* on Weel hosts
+hosts:
+  - https://letsweel.com
+  - https://developer.letsweel.com
+  - https://public.letsweel.com
+documents:
+  - host: https://letsweel.com
+    path: /.well-known/security.txt        # RFC 9116
+    status: 200
+    file: weel-security.txt
+  - host: https://letsweel.com
+    path: /.well-known/openid-configuration
+    status: 404
+  - host: https://letsweel.com
+    path: /.well-known/oauth-authorization-server
+    status: 404
+  - host: https://letsweel.com
+    path: /.well-known/api-catalog
+    status: 404
+  - host: https://developer.letsweel.com
+    path: /.well-known/security.txt
+    status: 404
+  - host: https://developer.letsweel.com
+    path: /.well-known/openid-configuration
+    status: 404
+  - host: https://public.letsweel.com
+    path: /.well-known/security.txt
+    status: 403
+    note: API host returns 403 for all unauthenticated paths (gateway blocks anonymous requests).
+  - host: https://public.letsweel.com
+    path: /.well-known/openid-configuration
+    status: 403
+notes: >-
+  Only the corporate host (letsweel.com) serves a /.well-known/security.txt (RFC 9116).
+  No OpenID Connect or OAuth authorization-server metadata is published on any host —
+  consistent with the API's bearer-API-key (not OAuth) auth model. The API host
+  public.letsweel.com returns 403 to all anonymous requests.

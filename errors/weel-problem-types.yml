@@ -1,0 +1,41 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/weel-openapi.yml
+format: http-status   # not rfc9457 — responses carry status + description only, no application/problem+json
+envelope:
+  note: >-
+    The Weel Open API returns a bare HTTP status with a short reason phrase; no
+    structured error body schema (no type/title/detail fields) is defined in the
+    spec. Titles/remediation below are derived from HTTP semantics and the
+    operation surface.
+problems:
+  - status: 400
+    title: Bad Request
+    meaning: The request was malformed or failed validation (missing/invalid fields, bad query params).
+    remediation: Check required body fields, query parameters, and value formats against the OpenAPI.
+    occurrences: 26
+  - status: 401
+    title: Unauthorized
+    meaning: Missing or invalid bearer token.
+    remediation: "Send a valid 'Authorization: Bearer <token>' header; regenerate the key under Settings > API if revoked."
+    occurrences: 49
+  - status: 403
+    title: Forbidden
+    meaning: The authenticated key lacks permission for the resource/business, or API access is not enabled on the plan.
+    remediation: Ensure the key belongs to the target business ({client_id}) and that API access (Enterprise) is enabled.
+    occurrences: 49
+  - status: 404
+    title: Not Found
+    meaning: The referenced resource (budget, user, transaction, custom field, etc.) does not exist.
+    remediation: Verify the path id and that it belongs to the business scope.
+    occurrences: 30
+  - status: 429
+    title: Too Many Requests
+    meaning: The client exceeded an (undocumented) rate limit.
+    remediation: Back off and retry; no RateLimit-* headers or published limits are documented.
+    occurrences: 1
+  - status: 503
+    title: Service Unavailable
+    meaning: The service is temporarily unavailable (e.g. downstream dependency).
+    remediation: Retry with exponential backoff.
+    occurrences: 1

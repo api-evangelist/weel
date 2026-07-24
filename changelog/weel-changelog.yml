@@ -1,0 +1,31 @@
+generated: '2026-07-24'
+method: searched
+source: https://letsweel.com/product-updates
+scheme: dated product updates (marketing changelog; no per-API semantic version log)
+current_version: v1 (v2 for transactions)
+docs: https://letsweel.com/product-updates
+entries:
+  - title: Open API
+    url: https://letsweel.com/product-updates/post/open-api
+    breaking: false
+    additions: true
+    highlights: >-
+      The Weel Open API expanded from read-only to read/write — programmatically
+      fetch and manage users, transactions, budgets, budget members and top-ups,
+      and write to chart of accounts, custom fields, users, and budgets.
+  - title: Mobile Accounts Payable approvals
+    category: Features
+    breaking: false
+    additions: true
+  - title: Pay BPAY invoices in Accounts Payable (beta)
+    category: Accounts Payable / Features
+    breaking: false
+    additions: true
+  - title: Wiise ERP integration
+    category: Integrations
+    breaking: false
+    additions: true
+note: >-
+  Weel publishes a product-updates feed (not a machine-readable per-API changelog).
+  Dates are not exposed on the individual update pages; entries above capture the
+  recent window relevant to the API surface.

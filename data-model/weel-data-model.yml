@@ -1,0 +1,117 @@
+generated: '2026-07-24'
+method: derived
+source: openapi/weel-openapi.yml
+note: >-
+  Entity-relationship graph derived from the Weel Open API path hierarchy and
+  id-reference fields. All resources are scoped to a Business via the {client_id}
+  path parameter.
+entities:
+  - name: business
+    key: client_id
+    root: true
+    description: The tenant. Every resource path is nested under /businesses/{client_id}.
+  - name: user
+    description: An employee / card holder in the business.
+  - name: invite
+    description: A pending user invitation; becomes a user when accepted.
+  - name: role
+    description: A named permission set assignable within the business.
+  - name: budget
+    description: A spend budget; funds allocated at budget or member level.
+  - name: budget_member
+    description: A user's membership of a budget, optionally with its own limits.
+  - name: budget_owner
+    description: A user who owns/approves a budget.
+  - name: budget_topup
+    description: A funding event added to a budget (or a budget member).
+  - name: transaction
+    description: A card/spend transaction (served under /v2).
+  - name: statement
+    description: A statement over transactions.
+  - name: balance
+    description: Business-level available balance.
+  - name: custom_field
+    description: A user-defined field applied to spend.
+  - name: custom_field_option
+    description: A selectable option belonging to a custom field.
+  - name: custom_field_budget
+    description: A link associating a custom field with a budget.
+  - name: accounting_code
+    description: A chart-of-accounts code for accounting-system sync.
+  - name: category
+    description: A spend category.
+  - name: tax_rate
+    description: A tax rate for coding spend.
+relationships:
+  - from: business
+    type: has_many
+    to: user
+    via: client_id
+  - from: business
+    type: has_many
+    to: budget
+    via: client_id
+  - from: business
+    type: has_many
+    to: transaction
+    via: client_id
+  - from: business
+    type: has_many
+    to: custom_field
+    via: client_id
+  - from: business
+    type: has_many
+    to: accounting_code
+    via: client_id
+  - from: business
+    type: has_many
+    to: category
+    via: client_id
+  - from: business
+    type: has_many
+    to: tax_rate
+    via: client_id
+  - from: business
+    type: has_one
+    to: balance
+    via: client_id
+  - from: invite
+    type: becomes
+    to: user
+    via: invite acceptance
+  - from: budget
+    type: has_many
+    to: budget_member
+    via: budget_id
+  - from: budget
+    type: has_many
+    to: budget_owner
+    via: budget_id
+  - from: budget
+    type: has_many
+    to: budget_topup
+    via: budget_id
+  - from: budget_member
+    type: belongs_to
+    to: user
+    via: user_id
+  - from: budget_member
+    type: has_many
+    to: budget_topup
+    via: budget_member_id
+  - from: budget_owner
+    type: belongs_to
+    to: user
+    via: user_id
+  - from: custom_field
+    type: has_many
+    to: custom_field_option
+    via: custom_field_id
+  - from: custom_field
+    type: has_many
+    to: custom_field_budget
+    via: custom_field_id
+  - from: custom_field_budget
+    type: belongs_to
+    to: budget
+    via: budget_id

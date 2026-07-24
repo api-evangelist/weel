@@ -1,0 +1,37 @@
+generated: '2026-07-24'
+method: searched
+source: openapi/weel-openapi.yml + Weel Trust Centre / press
+standards:
+  - id: soc2-type2
+    conforms: true
+    evidence: Weel holds SOC 2 Type 1 and Type 2 reports (trust.letsweel.com).
+  - id: iso-27001
+    conforms: true
+    evidence: ISO 27001:2022 certified (trust.letsweel.com).
+  - id: oauth2
+    conforms: false
+    evidence: Auth is HTTP bearer API key; no oauth2 securityScheme in the spec.
+  - id: oidc
+    conforms: false
+  - id: fapi
+    conforms: false
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: Error responses carry HTTP status + description only; no application/problem+json.
+  - id: pagination
+    conforms: true
+    evidence: >-
+      Consistent offset/limit query pagination with count/next/previous/results
+      envelope across list operations.
+  - id: idempotency
+    conforms: false
+    evidence: No Idempotency-Key header/parameter documented or present in the spec.
+  - id: json-api
+    conforms: false
+  - id: pci-dss
+    conforms: false
+    evidence: Not publicly claimed; Weel issues cards via an upstream BIN sponsor/processor.
+notes: >-
+  Cross-cutting standards conformance for the Weel Open API. Security/compliance
+  posture (SOC 2, ISO 27001) is certified and published; the REST API itself uses
+  bearer-key auth with offset/limit pagination and bare HTTP-status error semantics.

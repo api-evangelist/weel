@@ -63,7 +63,31 @@ apis:
     url: https://developer.letsweel.com/getting-started/authentication
   - type: GettingStarted
     url: https://developer.letsweel.com/getting-started/authentication
+  - type: MCPServer
+    url: mcp/weel-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: Overlay
+    url: overlays/weel-openapi-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
 common:
+- type: AgenticAccess
+  url: agentic-access/weel-agentic-access.yml
+- type: VulnerabilityDisclosure
+  url: security/weel-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/weel-domain-security.yml
+- type: Authentication
+  url: authentication/weel-authentication.yml
 - type: Website
   url: https://letsweel.com/
 - type: DeveloperPortal
@@ -80,6 +104,30 @@ common:
   url: https://letsweel.com/product-updates
 - type: TrustCenter
   url: https://trust.letsweel.com/
+- type: Compliance
+  url: security/weel-trust-center.yml
+- type: Security
+  url: security/weel-vulnerability-disclosure.yml
+- type: WellKnown
+  url: well-known/weel-well-known.yml
+- type: SecurityTxt
+  url: well-known/weel-security.txt
+- type: LLMsTxt
+  url: llms/weel-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+- type: ChangeLog
+  url: changelog/weel-changelog.yml
+- type: Support
+  url: https://help.letsweel.com/hc/en-us
+- type: Blog
+  url: https://letsweel.com/resources/the-weelhouse
+- type: TermsOfService
+  url: https://letsweel.com/terms
+- type: PrivacyPolicy
+  url: https://letsweel.com/privacy
+- type: SignUp
+  url: https://app.letsweel.com/app/business-signup
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

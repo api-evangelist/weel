@@ -1,0 +1,28 @@
+generated: '2026-07-24'
+method: searched
+probe: true
+url: https://trust.letsweel.com/
+certifications:
+  - SOC 2 Type 1
+  - SOC 2 Type 2
+  - ISO 27001:2022
+compliance_program:
+  soc2: true
+  iso27001: true
+  pci_dss: null   # not publicly claimed; Weel is not a card acquirer/processor
+evidence:
+  - source: https://trust.letsweel.com/
+    kind: trust center
+    note: >-
+      Weel Trust Centre (JS-rendered SafeBase/Vanta-style portal). Landing page
+      confirmed live (HTTP 200); certification detail requires the rendered app.
+  - source: https://australianfintech.com.au/expense-management-platform-weel-achieves-soc-2-and-iso-27001-certifications-reinforcing-commitment-to-trust/
+    kind: press
+    keywords: [soc 2 type 1, soc 2 type 2, iso 27001:2022, trust centre]
+  - source: https://itbrief.co.nz/story/weel-wins-security-certifications-launches-trust-centre
+    kind: press
+    keywords: [security certifications, trust centre]
+notes: >-
+  Weel achieved SOC 2 (Type 1 and Type 2) and ISO 27001:2022 certification and
+  launched its Trust Centre at trust.letsweel.com. Independent validation that
+  systems, controls, and processes safeguard customer data.

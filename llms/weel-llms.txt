@@ -1,0 +1,9 @@
+# llms.txt
+
+## Table of contents
+
+ - [Pagination](https://developer.letsweel.com/getting-started/pagination.md)
+ - [Authentication](https://developer.letsweel.com/getting-started/authentication.md)
+ - [Overview](https://developer.letsweel.com/index.html.md)
+ - [Weel OpenAPI](https://developer.letsweel.com/openapi.md)
+
