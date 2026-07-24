@@ -1,0 +1,3788 @@
+openapi: 3.1.0
+info:
+  title: Weel OpenAPI
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: >
+    The Weel OpenAPI empowers businesses with seamless expense management and
+    real-time insights. Our platform makes it easy to integrate and automate
+    expense workflows, manage receipts, and keep track of spending across your
+    organization.
+servers:
+  - url: https://public.letsweel.com
+security:
+  - BearerAuth: []
+x-tagGroups:
+  - name: Users
+    tags:
+      - Invites
+      - Users
+      - Roles
+  - name: Transactions
+    tags:
+      - Transactions
+  - name: Budgets
+    tags:
+      - Budgets
+      - Budget Members
+      - Budget Owners
+      - Budget Topups
+  - name: Statements
+    tags:
+      - Statements
+  - name: Custom Fields
+    tags:
+      - Custom Fields
+      - Custom Field Options
+      - Custom Field Budgets
+  - name: Chart of Accounts
+    tags:
+      - Accounting Codes
+      - Categories
+tags:
+  - name: Transactions
+    description: >-
+      This group of endpoints allows you to retrieve and manage transaction
+      data, including listing transactions with various filters and fetching
+      individual transaction details.
+  - name: Users
+    description: >-
+      This group of endpoints allows you to retrieve and manage user data,
+      including listing users and fetching individual user details.
+  - name: Invites
+    description: >-
+      This group of endpoints allows you to create, list, and cancel pending
+      user invitations. An invite exists until the recipient accepts it, at
+      which point they appear as a user in the Users endpoints.
+  - name: Roles
+    description: >-
+      This group of endpoints allows you to retrieve the roles available within
+      a business and the permissions assigned to each role.
+  - name: Budgets
+    description: >
+      This group of endpoints allows you to retrieve and manage budget data,
+      including listing budgets and fetching individual budget details.
+
+
+      Budgets are organised in a hierarchy where a budget can have multiple
+      members. Each member is associated with a user. Funds can be allocated at
+      the budget level or at the member level, using the flag
+      `has_member_limits`.
+
+
+      ![Budget Hierachy](assets/budget-hierarchy.png)
+  - name: Budget Members
+    description: >-
+      This group of endpoints allows you to retrieve and manage budget member
+      data, including listing budget members and fetching individual budget
+      member details.
+  - name: Budget Owners
+    description: >
+      This group of endpoints allows you to retrieve and manage budget owners. A
+      budget owner is a user (or pending invite) who can approve spend, top up,
+      and otherwise manage the budget.
+
+
+      A budget must always have at least one active owner — deleting the last
+      remaining owner is not permitted. Adding an owner who was previously
+      removed will reinstate the original record rather than create a duplicate.
+  - name: Budget Topups
+    description: >
+      This group of endpoints allows you to retrieve and create budget topups.
+      Topups are used to increase or decrease the available amount of a budget
+      or budget member.
+
+
+      Topups will be automatically approved, unless a Workflow or Policy has
+      been configured in Weel for that requires approval for budget topups.
+
+
+      There are two types of topups:
+        - Budget topups are used to increase or decrease the available amount of a budget. This is only permitted when `has_member_limits` is `false` for the budget.
+        - Budget member topups are used to increase or decrease the available amount of a budget member. This is only permitted when `has_member_limits` is `true` for the budget.
+
+      `has_member_limits` is set to `true` when this toggle is enabled in the
+      budget creation form.
+        ![Has Member Limits is true](assets/has-member-limits-true.png)
+  - name: Statements
+    description: >-
+      This group of endpoints allows you to retrieve a list of balances for the
+      required period for a given business.
+  - name: Custom Fields
+    description: >
+      This group of endpoints allows you to create and manage custom fields
+      (dimensions/cost centres) for your business.
+
+
+      Custom fields can be of type `LIST` (with predefined options) or
+      `FREE_TEXT`. Custom fields created via the Public API have a `created_by`
+      value of `PUBLIC_API`.
+
+
+      Custom fields created by accounting integrations (Xero, MYOB, QuickBooks,
+      NetSuite, Business Central) have restrictions: their name and type cannot
+      be modified via the Public API.
+  - name: Custom Field Options
+    description: >-
+      This group of endpoints allows you to manage the list options for a `LIST`
+      type custom field. Options created via the Public API can be disabled or
+      deleted.
+  - name: Custom Field Budgets
+    description: >-
+      This group of endpoints allows you to link custom fields to budgets,
+      controlling which budgets have a custom field assigned.
+  - name: Accounting Codes
+    description: >
+      This group of endpoints allows you to manage GL codes (accounting codes)
+      for your business.
+
+
+      GL codes are used to classify expenses for bookkeeping export. Businesses
+      with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks,
+      Business Central) cannot create or delete GL codes via the API — those are
+      managed by the integration sync. Businesses with a manual integration or
+      no integration can freely create, update, and delete GL codes. A manual
+      integration is automatically created on the first POST if none exists.
+  - name: Categories
+    description: >
+      This group of endpoints allow you to manage expense categories for your
+      business.
+
+
+      Categories classify transactions. System-defined categories (`custom:
+      false`) can only have their `enabled` state toggled. Custom categories
+      (`custom: true`) can have their `name` updated and can be deleted.
+  - name: Tax Rates
+    description: >
+      This group of endpoints allows you to retrieve the tax rates configured
+      for your business. Tax rates are read-only via the Public API.
+
+
+      For businesses with a connected accounting integration (Xero, MYOB,
+      NetSuite, QuickBooks, Business Central), the tax rates synced from that
+      integration are returned. Businesses without a connected integration get
+      their own manually configured tax rates.
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    IsDeleted:
+      name: is_deleted
+      in: query
+      description: Whether the resource is deleted.
+      schema:
+        type: boolean
+        example: false
+    TransactionId:
+      name: transaction_id
+      in: path
+      description: The ID of the transaction.
+      required: true
+      schema:
+        type: string
+    UserId:
+      name: user_id
+      in: path
+      description: The ID of the user.
+      required: true
+      schema:
+        type: integer
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
+    BudgetMemberId:
+      name: budget_member_id
+      in: path
+      description: The ID of the budget member.
+      required: true
+      schema:
+        type: integer
+    BudgetOwnerId:
+      name: budget_owner_id
+      in: path
+      description: The ID of the budget owner.
+      required: true
+      schema:
+        type: string
+    CustomFieldId:
+      name: custom_field_id
+      in: path
+      description: The ID of the custom field.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    CustomFieldOptionId:
+      name: option_id
+      in: path
+      description: The ID of the custom field option.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    InviteId:
+      name: invite_id
+      in: path
+      description: The ID of the invite.
+      required: true
+      schema:
+        type: integer
+    AccountingCodeId:
+      name: accounting_code_id
+      in: path
+      description: The ID of the accounting code (GL code).
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    CategoryId:
+      name: category_id
+      in: path
+      description: The ID of the category.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 7cb19e45-1234-5678-abcd-ef9876543210
+    TaxRateId:
+      name: tax_rate_id
+      in: path
+      description: The ID of the tax rate.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: e33b7c61-5124-4ba0-b238-e4c573133715
+  schemas:
+    StatementListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of daily balance records for the given period.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of daily balance records.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of daily balance records.
+          example: offset=0&limit=50
+        start_date:
+          type: string
+          format: date
+          description: The start date for this statement in UTC.
+          example: '2024-01-01'
+        end_date:
+          type: string
+          format: date
+          description: The end date for this statement in UTC.
+          example: '2024-01-31'
+        currency:
+          type: string
+          description: The currency of the statement.
+          example: AUD
+        opening_balance:
+          type: number
+          description: The opening balance of the statement.
+          example: 1000
+        closing_balance:
+          type: number
+          description: The closing balance of the statement.
+          example: 1000
+        daily_balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyBalance'
+    DailyBalance:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: The date of the daily balance.
+          example: '2024-01-01'
+        opening_balance:
+          type: number
+          description: The opening balance of this date.
+          example: 1000
+        closing_balance:
+          type: number
+          description: The closing balance of this date.
+          example: 1000
+        id:
+          type: string
+          description: The ID of the daily balance.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the balance was generated in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the balance was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    TransactionListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of transactions that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of transactions.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of transactions.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the transaction.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        cleared_date:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: The date the transaction was cleared in UTC.
+          example: '2024-01-01T00:00:00Z'
+        auth_date:
+          type: string
+          format: date-time
+          description: The date the transaction was authorised in UTC.
+          example: '2024-01-01T00:00:00Z'
+        merchant_name:
+          type: string
+          description: The name of the merchant.
+          example: Bunnings Warehouse
+        attendees:
+          type: array
+          description: The names of the attendees of the transaction.
+          items:
+            type: string
+            description: The name of the attendee.
+            example: Jane Doe
+        budget:
+          $ref: '#/components/schemas/TransactionBudget'
+          description: The budget associated with the transaction.
+        currency:
+          type: string
+          description: The currency of the transaction.
+          example: AUD
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+        fx_amount:
+          type: number
+          description: The foreign currency amount of the transaction.
+          example: 100
+        amount:
+          type: number
+          description: >-
+            The amount of the transaction in AUD (positive for credits, negative
+            for debits).
+          example: -100
+        gst:
+          type: number
+          description: The GST amount of the transaction.
+          example: 9.09
+        expense_status:
+          type: string
+          description: The expense completion status of the transaction.
+          enum:
+            - COMPLETE
+            - INCOMPLETE_EXPENSE
+          example: COMPLETE
+        status:
+          type: string
+          description: The status of the transaction.
+          enum:
+            - CLEARED
+            - AUTHED
+          example: CLEARED
+        transaction_type:
+          type: string
+          description: The type of transaction.
+          enum:
+            - CARD_TRANSACTION
+            - CHARGE
+            - DEPOSIT_DIRECT_CREDIT
+            - DEPOSIT_DIRECT_DEBIT
+            - BILL
+            - REIMBURSEMENT
+            - EXTERNAL_TRANSFER
+            - MANUAL_TRANSFER
+            - CREDIT
+          example: CARD_TRANSACTION
+        user:
+          description: The user who made the transaction.
+          $ref: '#/components/schemas/SubUser'
+        line_items:
+          type: array
+          description: The line items of the transaction.
+          items:
+            $ref: '#/components/schemas/LineItem'
+        receipt_urls:
+          type: array
+          description: The URLs of the receipts for the transaction.
+          items:
+            type: string
+            example: >-
+              https://divipay-user-production.s3.amazonaws.com/123/68eae8f6-cb90-4403-ba76-a2cc12c3979j.png
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the transaction was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the transaction was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    TransactionBudget:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+            - BUDGET
+            - SUBSCRIPTION
+          example: BUDGET
+    LineItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the line item.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        amount:
+          type: number
+          description: The amount of the line item in AUD.
+          example: 100
+        gst_amount:
+          type: number
+          description: >
+            The GST amount of the line item. When a `tax_rate` is applied to the
+            line item, this is derived from `tax_rate.rate`.
+          example: 9.09
+        tax_rate:
+          $ref: '#/components/schemas/TaxRate'
+          description: >
+            The tax rate applied to the line item. This property has three
+            states: it is absent when itemised tax rates are not enabled for the
+            business; it is a `TaxRate` object when a tax rate could be resolved
+            for the line item; and it is `null` when itemised tax rates are
+            enabled for the business but a tax rate could not be resolved for
+            the line item.
+        category:
+          $ref: '#/components/schemas/LineItemCategory'
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+        description:
+          type: string
+          description: The description of the line item.
+          example: Building supplies
+    TaxRate:
+      type:
+        - object
+        - 'null'
+      description: >
+        A tax rate applied to a line item. May be `null` when itemised tax rates
+        are enabled for the business but a rate could not be resolved.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the tax rate.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the tax rate.
+          example: GST
+        rate:
+          type: number
+          description: The tax rate as a decimal fraction.
+          example: 0.1
+        code:
+          type:
+            - string
+            - 'null'
+          description: The tax rate code.
+          example: GST
+        is_default_for:
+          type: string
+          description: Which transaction types the tax rate is the default for.
+          enum:
+            - DOMESTIC
+            - INTERNATIONAL
+            - BOTH
+            - NONE
+          example: DOMESTIC
+        is_enabled:
+          type: boolean
+          description: Whether the tax rate is enabled.
+          example: true
+        source:
+          type: string
+          description: The source of the tax rate.
+          enum:
+            - WEEL
+            - MANUAL
+            - ASP
+          example: WEEL
+    CustomFieldValue:
+      type: object
+      properties:
+        field_name:
+          type: string
+          description: The name of the custom field.
+          example: Project
+        entry_text:
+          type: string
+          description: The text value of the custom field.
+          example: Project 1
+    InviteListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of invites that match the query.
+          example: 10
+        next:
+          type:
+            - string
+            - 'null'
+          description: The URL to the next page of invites.
+          example: offset=50&limit=50
+        previous:
+          type:
+            - string
+            - 'null'
+          description: The URL to the previous page of invites.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invite'
+    PaymentType:
+      type: string
+      enum:
+        - bills
+        - cards
+        - reimbursements
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the invite.
+          example: 99
+        email:
+          type: string
+          format: email
+          description: The email address the invite was sent to.
+          example: jane.doe@example.com
+        role_id:
+          type: string
+          format: uuid
+          description: The ID of the role assigned to the invitee.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        role:
+          type: string
+          description: The name of the role assigned to the invitee.
+          example: Team Member
+        payment_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          description: The payment types the invitee will have access to.
+          example:
+            - cards
+            - reimbursements
+        used:
+          type: boolean
+          description: Whether the invite has been accepted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time the invite was created in UTC.
+          example: '2026-05-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time the invite was last updated in UTC.
+          example: '2026-05-01T00:00:00Z'
+    InviteCreateRequest:
+      type: object
+      required:
+        - email
+        - role_id
+        - payment_types
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address to send the invite to.
+          example: jane.doe@example.com
+        role_id:
+          type: string
+          format: uuid
+          description: >-
+            The ID of the role to assign to the invitee. Must belong to the
+            business.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        payment_types:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          description: >-
+            The payment types the invitee will have access to. Must be a
+            non-empty list.
+          example:
+            - cards
+            - reimbursements
+    UserListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of users that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of users.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of users.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    RoleListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of roles for the business.
+          example: 5
+        next:
+          type: string
+          description: The URL to the next page of roles.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of roles.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+    Role:
+      type: object
+      required:
+        - id
+        - name
+        - is_deletable
+        - permissions
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the role.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        name:
+          type: string
+          description: The name of the role.
+          example: Team Member
+        is_deletable:
+          type: boolean
+          description: Whether the role can be deleted.
+          example: false
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+    Permission:
+      type: object
+      required:
+        - resource
+        - action
+      properties:
+        resource:
+          type: string
+          description: The resource the action applies to.
+          example: transactions
+        action:
+          type: string
+          description: The action permitted on the resource.
+          enum:
+            - create
+            - read
+            - update
+            - delete
+          example: read
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: >-
+            The full name of the user or the display name if the user has set
+            one.
+          example: John Doe
+        email:
+          type: string
+          format: email
+          description: The email of the user.
+          example: john.doe@example.com
+        role:
+          type: string
+          description: The role of the user.
+          example: Team Member
+        role_id:
+          type: string
+          format: uuid
+          description: The ID of the user's role.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        is_deleted:
+          type: boolean
+          description: Whether the user is deleted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the user was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the user was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+        payment_types:
+          type: array
+          description: The payment types the user can transact with.
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          example:
+            - cards
+        out_of_office_mode:
+          type: boolean
+          description: Whether the user is out of office.
+          example: true
+        out_of_office_start_date:
+          type:
+            - string
+            - 'null'
+          format: date
+          description: First day of the out-of-office period (inclusive).
+          example: '2026-06-01'
+        out_of_office_end_date:
+          type:
+            - string
+            - 'null'
+          format: date
+          description: Last day of the out-of-office period (inclusive).
+          example: '2026-06-15'
+        delegate_approver:
+          type:
+            - integer
+            - 'null'
+          description: The user ID to delegate approvals to while out of office.
+          example: 789
+        expense_delegate:
+          type:
+            - array
+            - 'null'
+          items:
+            type: integer
+          description: >-
+            The user IDs of this user's expense assistants (who can act on their
+            expenses). Null if the business does not have the expense assistant
+            feature.
+          example:
+            - 456
+            - 789
+    UserUpdate:
+      type: object
+      description: Fields that may be updated on an active employee. All optional.
+      properties:
+        role_id:
+          type: string
+          format: uuid
+          description: The role to assign to the user. Must belong to the same business.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        payment_types:
+          type: array
+          description: The payment types the user can transact with.
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          example:
+            - cards
+        out_of_office_mode:
+          type: boolean
+          description: >-
+            Whether the user is out of office. When true, both start and end
+            dates are required.
+          example: true
+        out_of_office_start_date:
+          type: string
+          format: date
+          description: First day of the out-of-office period (inclusive).
+          example: '2026-06-01'
+        out_of_office_end_date:
+          type: string
+          format: date
+          description: >-
+            Last day of the out-of-office period (inclusive). Must be on or
+            after the start date.
+          example: '2026-06-15'
+        delegate_approver:
+          type:
+            - integer
+            - 'null'
+          description: >-
+            The user ID to delegate approvals to while out of office. Must
+            belong to the same business and have no overlapping out-of-office
+            period.
+          example: 789
+        expense_delegate:
+          type: array
+          items:
+            type: integer
+          description: >-
+            Replaces the user's full set of expense assistants with these user
+            IDs. A user can have at most 3 expense assistants. Each ID must
+            belong to the same business, must be a different user (a user cannot
+            be their own expense assistant), and must not be repeated. Expense
+            assistants cannot be chained. A user who is themselves an expense
+            assistant cannot be given assistants, and a user who already has
+            assistants cannot be assigned as one. Omit this field to leave the
+            current assistants unchanged, or send an empty array to remove them
+            all.
+          example:
+            - 456
+            - 789
+    SubUser:
+      type:
+        - object
+        - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: >-
+            The full name of the user or the display name if the user has set
+            one.
+          example: John Doe
+    UserBudget:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+            - BUDGET
+            - SUBSCRIPTION
+          example: BUDGET
+    UserBudgetMember:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget member.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        budget:
+          description: The budget for the budget member.
+          $ref: '#/components/schemas/UserBudget'
+        available_amount:
+          type: number
+          description: The available amount of the budget member.
+          example: 800
+        spent_amount:
+          type: number
+          description: The amount of the budget that has been spent by the budget member.
+          example: 200
+        reset_amount:
+          type: number
+          description: The reset amount of the budget member.
+          example: 1000
+        is_deleted:
+          type: boolean
+          description: Whether the budget member is deleted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    UserBudgetMemberListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budget members for the user.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budget members.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budget members.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBudgetMember'
+    Budget:
+      type: object
+      required:
+        - id
+        - name
+        - budget_type
+        - available_amount
+        - spent_amount
+        - reset_amount
+        - reset_period
+        - current_period_start
+        - current_period_end
+        - has_member_limits
+        - rollover_funds
+        - limit_categories
+        - categories
+        - custom_fields
+        - is_deleted
+        - created
+        - updated
+      properties:
+        id:
+          type: string
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+            - BUDGET
+            - SUBSCRIPTION
+          example: BUDGET
+        available_amount:
+          type: number
+          description: The available amount of the budget.
+          example: 800
+        spent_amount:
+          type: number
+          description: The amount of the budget that has been spent.
+          example: 200
+        reset_amount:
+          type: number
+          description: The reset amount of the budget.
+          example: 1000
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        current_period_start:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: The start date of the current period in UTC.
+          example: '2024-01-01T00:00:00Z'
+        current_period_end:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: The end date of the current period in UTC.
+          example: '2024-01-31T23:59:59Z'
+        has_member_limits:
+          type: boolean
+          description: Whether the budget has member limits.
+          example: false
+        rollover_funds:
+          type: boolean
+          description: >-
+            When true, unspent balance rolls over to the next period instead of
+            resetting.
+          example: false
+        limit_categories:
+          type: boolean
+          description: |
+            When true, only categories listed in `categories` are visible on
+            the budget. When false, all enabled business categories are visible.
+          example: false
+        categories:
+          type: array
+          description: |
+            Categories currently visible on the budget. Returns an empty array
+            when `limit_categories` is false (no restriction in force).
+          items:
+            type: object
+            required:
+              - id
+              - name
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 7f183748-c7fb-428a-9b2a-603a03dcabdb
+              name:
+                type: string
+                example: Travel
+        custom_fields:
+          type: array
+          description: Custom fields attached to this budget.
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - allow_options
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: The id of the custom field.
+                example: 44b2add5-eeb2-456c-8918-9bb362b0e896
+              name:
+                type: string
+                example: Department
+              allow_options:
+                type:
+                  - array
+                  - 'null'
+                description: |
+                  For LIST-type custom fields, the list-item ids selectable on
+                  this budget. `null` means no per-budget restriction (all
+                  enabled options are selectable). An empty array means no
+                  options are selectable on this budget. Always `null` for
+                  FREE_TEXT custom fields.
+                items:
+                  type: string
+                  format: uuid
+        is_deleted:
+          type: boolean
+          description: Whether the budget is deleted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    BudgetListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budgets that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budgets.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budgets.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget'
+    BudgetResetPeriod:
+      type: string
+      description: |
+        The reset cadence for the budget. JULY_FINANCIAL_YEAR resets on 1 July;
+        APRIL_FINANCIAL_YEAR resets on 1 April.
+      enum:
+        - DAILY
+        - WEEKLY
+        - FORTNIGHTLY
+        - MONTHLY
+        - QUARTERLY
+        - ANNUALLY
+        - JULY_FINANCIAL_YEAR
+        - APRIL_FINANCIAL_YEAR
+        - NEVER
+      example: MONTHLY
+    BudgetUserRef:
+      type: object
+      description: Reference to an existing Weel user by id.
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          description: The id of the user.
+          example: 12345
+    BudgetInviteRef:
+      type: object
+      description: Reference to an outstanding invite by id.
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the invite.
+          example: f4c1e25a-2a78-4f4f-9d3e-1c3a96cf21b1
+    BudgetMemberInput:
+      type: object
+      description: |
+        A member to attach to the budget. Provide exactly one of `user` or
+        `invite`. `reset_amount` is required when `has_member_limits` is true
+        and must be omitted otherwise; the sum of member `reset_amount` values
+        must equal the budget's `reset_amount`.
+      properties:
+        user:
+          $ref: '#/components/schemas/BudgetUserRef'
+        invite:
+          $ref: '#/components/schemas/BudgetInviteRef'
+        reset_amount:
+          type: number
+          description: The per-member spending cap when has_member_limits is true.
+          example: 250
+      oneOf:
+        - required:
+            - user
+        - required:
+            - invite
+    BudgetOwnerInput:
+      type: object
+      description: |
+        An owner (budget approver) to attach to the budget. Provide exactly
+        one of `user` or `invite`.
+      properties:
+        user:
+          $ref: '#/components/schemas/BudgetUserRef'
+        invite:
+          $ref: '#/components/schemas/BudgetInviteRef'
+      oneOf:
+        - required:
+            - user
+        - required:
+            - invite
+    BudgetCustomFieldInput:
+      type: object
+      description: |
+        A custom field to attach to the budget. `allow_options` restricts the
+        visible list items for LIST-type custom fields. Pass `[]` to detach
+        all options; omit the key to leave existing options unchanged.
+        `null` is not accepted.
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the custom field.
+          example: a2b1d8c0-9a4e-4b8a-bf24-90af44a98e2f
+        allow_options:
+          type: array
+          description: List item ids that should remain selectable on this budget.
+          items:
+            type: string
+            format: uuid
+    BudgetCreateRequest:
+      type: object
+      required:
+        - name
+        - reset_amount
+        - reset_period
+        - has_member_limits
+        - rollover_funds
+        - members
+        - owners
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: The name of the budget.
+          example: Sales Team
+        reset_amount:
+          type: number
+          description: The amount the budget resets to each period.
+          example: 1000
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        has_member_limits:
+          type: boolean
+          description: |
+            When true, each member has its own `reset_amount` cap and the sum
+            of member caps must equal the budget `reset_amount`. When false,
+            members share the budget's pot.
+          example: false
+        rollover_funds:
+          type: boolean
+          description: When true, unspent balance rolls over to the next period.
+          example: false
+        members:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/BudgetMemberInput'
+        owners:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/BudgetOwnerInput'
+        limit_categories:
+          type: boolean
+          description: |
+            When true, only the categories listed in `categories` are visible
+            on the budget. When false, all business categories are visible.
+          default: false
+          example: false
+        categories:
+          type: array
+          description: Category ids that should be visible on the budget.
+          items:
+            type: string
+            format: uuid
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCustomFieldInput'
+    BudgetUpdateRequest:
+      type: object
+      description: |
+        Partial update of a budget's configuration. To change members or
+        owners, use their respective endpoints —
+        [budget members](#tag/Budget-Members) and
+        [budget owners](#tag/Budget-Owners). Toggling `has_member_limits`
+        cascades onto existing members (equal split on false→true).
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          example: Sales Team
+        reset_amount:
+          type: number
+          example: 1500
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        has_member_limits:
+          type: boolean
+          example: true
+        rollover_funds:
+          type: boolean
+          example: true
+        limit_categories:
+          type: boolean
+          example: true
+        categories:
+          type: array
+          items:
+            type: string
+            format: uuid
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCustomFieldInput'
+    BudgetMember:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget member.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        user:
+          description: >-
+            The user for the budget member. Only present if the user has
+            accepted their invite to Weel.
+          $ref: '#/components/schemas/SubUser'
+        invite:
+          description: >-
+            The invite for the budget member. Only present if the user has not 
+            accepted their invite to Weel.
+          $ref: '#/components/schemas/Invite'
+        available_amount:
+          type: number
+          description: The available amount of the budget member.
+          example: 800
+        spent_amount:
+          type: number
+          description: The amount of the budget that has been spent by the budget member.
+          example: 200
+        reset_amount:
+          type: number
+          description: The reset amount of the budget member.
+          example: 1000
+        is_deleted:
+          type: boolean
+          description: Whether the budget member is deleted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    BudgetMemberListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budget members that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budget members.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budget members.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetMember'
+    CreateBudgetMemberRequest:
+      type: object
+      description: |
+        Provide exactly one of `user` or `invite`. `reset_amount` is required
+        when the budget has `has_member_limits=true` and must be omitted
+        otherwise.
+      properties:
+        user:
+          type: object
+          description: An accepted user in this business.
+          properties:
+            id:
+              type: integer
+              description: The user's ID.
+              example: 123
+          required:
+            - id
+        invite:
+          type: object
+          description: A pending invite in this business.
+          properties:
+            id:
+              type: string
+              description: The invite's ID.
+              example: e33b7c61-5124-4ba0-b238-e4c573133715
+          required:
+            - id
+        reset_amount:
+          type: number
+          description: >
+            The member's spending limit. Required when the budget has
+
+            `has_member_limits=true`. Must be omitted when
+            `has_member_limits=false`
+
+            (the member inherits the budget's `reset_amount`).
+          example: 500
+      oneOf:
+        - required:
+            - user
+        - required:
+            - invite
+    UpdateBudgetMemberRequest:
+      type: object
+      description: |
+        Updates the member's `reset_amount`. Only valid when the budget has
+        `has_member_limits=true`.
+      properties:
+        reset_amount:
+          type: number
+          description: The new per-member spending limit.
+          example: 750
+      required:
+        - reset_amount
+    BudgetOwner:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget owner.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        user:
+          description: >-
+            The user for the budget owner. Only present once the underlying
+            invite has been accepted.
+          $ref: '#/components/schemas/SubUser'
+        invite:
+          description: >-
+            The pending invite for the budget owner. Only present while the user
+            has not yet accepted their invite.
+          $ref: '#/components/schemas/Invite'
+        is_deleted:
+          type: boolean
+          description: Whether the budget owner has been removed from the budget.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget owner was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget owner was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    BudgetOwnerListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budget owners that match the query.
+          example: 3
+        next:
+          type: string
+          description: The URL to the next page of budget owners.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budget owners.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetOwner'
+    CreateBudgetOwnerRequest:
+      type: object
+      description: |
+        Provide exactly one of `user` or `invite`. If the invite has already
+        been accepted by the time the request is processed, the response will
+        contain `user` rather than `invite`.
+      properties:
+        user:
+          type: object
+          description: An accepted user in this business.
+          properties:
+            id:
+              type: integer
+              description: The user's ID.
+              example: 123
+          required:
+            - id
+        invite:
+          type: object
+          description: A pending invite in this business.
+          properties:
+            id:
+              type: string
+              description: The invite's ID.
+              example: e33b7c61-5124-4ba0-b238-e4c573133715
+          required:
+            - id
+      oneOf:
+        - required:
+            - user
+        - required:
+            - invite
+    BudgetTopup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the topup.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        amount:
+          type: number
+          description: >-
+            Positive values increase the available amount, negative values
+            decrease it.
+          example: 100
+        description:
+          type: string
+          description: The description of the topup.
+          example: Additional funds for travel
+        status:
+          type: string
+          description: The status of the topup.
+          enum:
+            - APPROVED
+            - CANCELLED
+            - DECLINED
+            - PENDING
+          example: APPROVED
+        requested_by:
+          description: The user who requested the topup.
+          $ref: '#/components/schemas/SubUser'
+        actioned_by:
+          description: The user who actioned an approval or decline of the topup.
+          $ref: '#/components/schemas/SubUser'
+        actioned_on:
+          type: string
+          format: date-time
+          description: The date and time when the topup was actioned in UTC.
+          example: '2024-01-01T00:00:00Z'
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the topup was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the topup was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    BudgetTopupListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of topups that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of topups.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of topups.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetTopup'
+    BudgetTopupCreate:
+      type: object
+      required:
+        - amount
+        - description
+      properties:
+        amount:
+          type: number
+          description: >-
+            Positive values increase the available amount, negative values
+            decrease it.
+          example: 100
+        description:
+          type: string
+          description: The description of the topup.
+          example: Additional funds for travel
+        auto_approve:
+          type: boolean
+          description: >-
+            By default, topups require approval before being added to the
+            budget. Set this to `true` to automatically add the topup to the
+            budget.
+          example: true
+    LineItemCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the category.
+          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
+        name:
+          type: string
+          description: The name of the category in Weel.
+          example: Accommodation
+        code:
+          type:
+            - string
+            - 'null'
+          description: The accounting code of the category, if any.
+          example: '6668'
+    Balance:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Account balance amount as a decimal number
+          example: 123.45
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          example: AUD
+      required:
+        - balance
+        - currency
+    CustomField:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for this custom field.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name:
+          type: string
+          description: The display name of the custom field.
+          example: Project Code
+        field_type:
+          type: string
+          description: The type of the custom field.
+          enum:
+            - LIST
+            - FREE_TEXT
+          example: LIST
+        budget_setting:
+          type: string
+          description: Controls which budgets this custom field is assigned to.
+          enum:
+            - NONE
+            - SOME
+            - ALL_CURRENT_AND_NEW
+          example: NONE
+        is_manager_only:
+          type: boolean
+          description: >-
+            Whether this custom field is visible only to managers. Cannot be
+            changed after creation.
+          example: false
+        created_by:
+          type: string
+          description: The source that created this custom field.
+          enum:
+            - MANUAL
+            - PUBLIC_API
+            - XERO
+            - MYOB
+            - QUICKBOOKS
+            - NETSUITE
+            - BUSINESS_CENTRAL
+          example: PUBLIC_API
+        created:
+          type: string
+          format: date-time
+          description: The date and time when this custom field was created.
+          example: '2024-01-15T09:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when this custom field was last updated.
+          example: '2024-01-15T09:00:00Z'
+    CustomFieldListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of custom fields.
+          example: 10
+        next:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomField'
+    CreateCustomFieldRequest:
+      type: object
+      required:
+        - name
+        - field_type
+      properties:
+        name:
+          type: string
+          description: >-
+            The display name for the custom field. Must be unique within the
+            business.
+          example: Project Code
+        field_type:
+          type: string
+          description: The type of the custom field.
+          enum:
+            - LIST
+            - FREE_TEXT
+          example: LIST
+        budget_setting:
+          type: string
+          description: Controls which budgets this custom field is assigned to.
+          enum:
+            - NONE
+            - SOME
+            - ALL_CURRENT_AND_NEW
+          default: ALL_CURRENT_AND_NEW
+          example: NONE
+    UpdateCustomFieldRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: >-
+            The new display name. Not permitted for fields created by accounting
+            integrations. Cannot set to a name already in use by another custom
+            field in the business.
+          example: Cost Centre
+        field_type:
+          type: string
+          description: >-
+            The type of the custom field. Not permitted for fields created by
+            accounting integrations.
+          enum:
+            - LIST
+            - FREE_TEXT
+          example: LIST
+        is_manager_only:
+          type: boolean
+          description: >-
+            Cannot be changed after creation — always returns 400 if a different
+            value is sent.
+          example: false
+        budget_setting:
+          type: string
+          description: Controls which budgets this custom field is assigned to.
+          enum:
+            - NONE
+            - SOME
+            - ALL_CURRENT_AND_NEW
+          example: SOME
+    CustomFieldOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for this option.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        text:
+          type: string
+          description: The display text of this option.
+          example: Project Alpha
+        enabled:
+          type: boolean
+          description: Whether this option is available for selection.
+          example: true
+        created:
+          type: string
+          format: date-time
+          description: The date and time when this option was created.
+          example: '2024-01-15T09:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when this option was last updated.
+          example: '2024-01-15T09:00:00Z'
+    CustomFieldOptionListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of options for this custom field (including disabled).
+          example: 5
+        next:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldOption'
+    CreateCustomFieldOptionRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: The display text for this option.
+          example: Project Alpha
+    UpdateCustomFieldOptionRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          description: >-
+            The new display text. Only permitted for options belonging to
+            non-accounting-integration custom fields.
+          example: Project Beta
+        enabled:
+          type: boolean
+          description: >-
+            Enable or disable this option. Only permitted for options belonging
+            to accounting integration custom fields (Xero, MYOB, QuickBooks,
+            NetSuite, Business Central).
+          example: false
+    CustomFieldBudget:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the linked budget.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name:
+          type: string
+          description: The name of the linked budget.
+          example: Marketing Q1
+    CustomFieldBudgetListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of budgets linked to this custom field.
+          example: 3
+        next:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldBudget'
+    CreateCustomFieldBudgetRequest:
+      type: object
+      required:
+        - budget
+      properties:
+        budget:
+          type: string
+          format: uuid
+          description: The ID of the budget to link to this custom field.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    AccountingCode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for this GL code.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        code:
+          type: string
+          description: The GL code string used for bookkeeping export.
+          example: '4000'
+        name:
+          type: string
+          description: The display name of the GL code.
+          example: Office Expenses
+        created:
+          type: string
+          format: date-time
+          description: When this GL code was created in UTC.
+          example: '2026-01-15T10:30:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: When this GL code was last updated in UTC.
+          example: '2026-01-15T10:30:00Z'
+    AccountingCodeListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of GL codes.
+          example: 100
+        next:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingCode'
+    CreateAccountingCodeRequest:
+      type: object
+      required:
+        - code
+        - name
+      properties:
+        code:
+          type: string
+          maxLength: 128
+          description: >-
+            The GL code string. Used as the upsert key — if a code with this
+            value already exists it will be updated.
+          example: '4000'
+        name:
+          type: string
+          maxLength: 150
+          description: The display name of the GL code.
+          example: Office Expenses
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for this category.
+          example: 7cb19e45-1234-5678-abcd-ef9876543210
+        name:
+          type: string
+          description: The display name of the category.
+          example: Travel
+        custom:
+          type: boolean
+          description: >-
+            Whether this is a custom category created by the business.
+            System-defined categories have `custom: false`.
+          example: false
+        enabled:
+          type: boolean
+          description: Whether this category is available for use on transactions.
+          example: true
+        accounting_code_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: >-
+            The ID of the GL code mapped to this category, or `null` if no
+            mapping exists.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        created:
+          type: string
+          format: date-time
+          description: When this category was created in UTC.
+          example: '2025-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: When this category was last updated in UTC.
+          example: '2025-01-01T00:00:00Z'
+    CategoryListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of categories.
+          example: 10
+        next:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    TaxRateListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of tax rates.
+          example: 10
+        next:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+            - string
+            - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+    CreateCategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: >-
+            The display name for the new custom category. Must be unique within
+            the business.
+          example: Internal Events
+        accounting_code_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: >-
+            The ID of a GL code to map to this category. Must belong to the same
+            business. Omit to create without a mapping.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: >-
+            New display name. Only accepted for custom categories (`custom:
+            true`). Returns 400 for system categories.
+          example: Updated Category Name
+        enabled:
+          type: boolean
+          description: >-
+            Whether this category is available for use. Only accepted for system
+            categories (`custom: false`). Returns 400 for custom categories.
+          example: false
+        accounting_code_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: >-
+            The ID of a GL code to map to this category. Pass `null` to remove
+            an existing mapping. Must belong to the same business.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+paths:
+  /v2/businesses/{client_id}/transactions:
+    get:
+      operationId: listTransactions
+      tags:
+        - Transactions
+      summary: List transactions
+      description: >
+        This endpoint allows you to retrieve a list of transactions for a given
+        business. You can filter the transactions by date range, status, and
+        expense completion status.
+      parameters:
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - $ref: '#/components/parameters/ClientId'
+        - name: min_auth_date
+          in: query
+          required: false
+          description: The minimum authorised date for the transactions in UTC.
+          schema:
+            type: string
+            format: date
+        - name: max_auth_date
+          in: query
+          required: false
+          description: The maximum authorised date for the transactions in UTC.
+          schema:
+            type: string
+            format: date
+        - name: min_cleared_date
+          in: query
+          required: false
+          description: The minimum cleared date for the transactions in UTC.
+          schema:
+            type: string
+            format: date
+        - name: max_cleared_date
+          in: query
+          required: false
+          description: The maximum cleared date for the transactions in UTC.
+          schema:
+            type: string
+            format: date
+        - name: expense_status
+          in: query
+          required: false
+          description: The expense completion status of the transactions.
+          schema:
+            type: string
+            enum:
+              - COMPLETE
+              - INCOMPLETE_EXPENSE
+            example: COMPLETE
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v2/businesses/{client_id}/transactions/{transaction_id}:
+    get:
+      operationId: getTransaction
+      tags:
+        - Transactions
+      summary: Get transaction
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/TransactionId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/statements:
+    get:
+      operationId: listStatements
+      description: >-
+        This endpoint allows you to retrieve a list of balances for the required
+        period for a given business.
+      tags:
+        - Statements
+      summary: List statements
+      parameters:
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - $ref: '#/components/parameters/ClientId'
+        - name: start_date
+          in: query
+          required: true
+          description: The start date for this statement in UTC.
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: true
+          description: The end date for this statement in UTC.
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/users:
+    get:
+      operationId: listUsers
+      description: >-
+        This endpoint allows you to retrieve a list of users for a given
+        business.
+      tags:
+        - Users
+      summary: List users
+      parameters:
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - $ref: '#/components/parameters/ClientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/roles:
+    get:
+      operationId: listRoles
+      description: >-
+        Returns the available roles that can be assigned to users within a
+        business.
+      tags:
+        - Roles
+      summary: List roles
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/users/{user_id}:
+    get:
+      operationId: getUser
+      description: This endpoint allows you to retrieve a user by their ID.
+      tags:
+        - Users
+      summary: Get user
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    patch:
+      operationId: updateUser
+      description: >
+        Update role, payment types, and/or delegation settings for an active
+        employee.
+
+        All fields in the request body are optional.
+      tags:
+        - Users
+      summary: Update user
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: deleteUser
+      description: Deletes an active employee.
+      tags:
+        - Users
+      summary: Delete user
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '503':
+          description: Service Unavailable
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/invites:
+    get:
+      operationId: listInvites
+      description: >-
+        Returns a paginated list of invites for the given business. Includes
+        both pending and accepted invites; excludes cancelled invites.
+      tags:
+        - Invites
+      summary: List invites
+      parameters:
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - $ref: '#/components/parameters/ClientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+    post:
+      operationId: createInvite
+      description: >-
+        Creates and sends an invite to the given email address. Returns the
+        created invite, including its ID for use in the cancel endpoint.
+      tags:
+        - Invites
+      summary: Create invite
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invite'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/invites/{invite_id}:
+    delete:
+      operationId: cancelInvite
+      description: >-
+        Cancels a pending invite. Returns 400 if the invite has already been
+        accepted.
+      tags:
+        - Invites
+      summary: Cancel invite
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/InviteId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request — invite has already been accepted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/users/{user_id}/budget-members:
+    get:
+      operationId: listBudgetMembersByUser
+      description: This endpoint allows you to retrieve budget members by their user ID.
+      tags:
+        - Users
+      summary: List budget members by user ID
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBudgetMemberListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets:
+    get:
+      operationId: listBudgets
+      tags:
+        - Budgets
+      summary: List budgets
+      parameters:
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/IsDeleted'
+        - name: budget_type
+          in: query
+          required: false
+          description: The type of budget.
+          schema:
+            type: string
+            enum:
+              - BUDGET
+              - SUBSCRIPTION
+            example: BUDGET
+        - name: has_member_limits
+          in: query
+          required: false
+          description: Whether the budget has member limits.
+          schema:
+            type: boolean
+            example: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+    post:
+      operationId: createBudget
+      tags:
+        - Budgets
+      summary: Create a budget
+      description: |
+        Creates a budget with the given configuration, initial members, and
+        owners. All top-level configuration fields are required — no silent
+        defaults.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '429':
+          description: Too Many Requests
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}:
+    get:
+      operationId: getBudget
+      tags:
+        - Budgets
+      summary: Get budget
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    patch:
+      operationId: updateBudget
+      tags:
+        - Budgets
+      summary: Update a budget
+      description: |
+        Updates a budget's top-level configuration. To change members or
+        owners, use their respective endpoints —
+        [budget members](#tag/Budget-Members) and
+        [budget owners](#tag/Budget-Owners).
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: deleteBudget
+      tags:
+        - Budgets
+      summary: Delete a budget
+      description: Deletes a budget. Cascades to members and owners.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/topups:
+    get:
+      operationId: listBudgetTopups
+      tags:
+        - Budget Topups
+      summary: List budget topups
+      description: List the topups for a budget.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetTopupListResponse'
+    post:
+      operationId: createBudgetTopup
+      tags:
+        - Budget Topups
+      summary: Create budget topup
+      description: >-
+        Increase or decrease the available amount of a budget. Only permitted
+        when `has_member_limits` is `false` for the budget.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetTopupCreate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetTopup'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  non_field_errors:
+                    type: array
+                    items:
+                      type: string
+                      example: Cannot topup budget with member limits
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/members:
+    get:
+      operationId: listBudgetMembers
+      tags:
+        - Budget Members
+      summary: List budget members
+      description: A budget member is a user who has been invited to a budget.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - $ref: '#/components/parameters/IsDeleted'
+        - name: user_id
+          in: query
+          required: false
+          description: The ID of the user to filter by.
+          schema:
+            type: integer
+            example: 123
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMemberListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+    post:
+      operationId: createBudgetMember
+      tags:
+        - Budget Members
+      summary: Add budget member
+      description: |
+        Adds a user (or pending invite) as a member of the budget. Provide
+        exactly one of `user` or `invite`. If an invite has already been
+        accepted, the response will contain `user` rather than `invite`.
+
+        **Side effect:** On budgets with per-member limits, adding a member
+        increases the budget's total limit and available amount by the new
+        member's `reset_amount`. Re-fetch the budget if you need the
+        updated totals. Shared-pot budgets are unaffected.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetMemberRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMember'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}:
+    get:
+      operationId: getBudgetMember
+      tags:
+        - Budget Members
+      summary: Get budget member
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/BudgetMemberId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMember'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    patch:
+      operationId: updateBudgetMember
+      tags:
+        - Budget Members
+      summary: Update budget member
+      description: >
+        Updates a budget member's `reset_amount`. Only valid when the budget has
+
+        `has_member_limits=true` and `reset_period` is not `NEVER`.
+
+
+        **Side effect:** The budget's total limit changes by the difference
+
+        between the old and new `reset_amount`. The budget's available amount
+
+        is not touched — use
+        [topups](#tag/Budget-Topups/operation/createBudgetMemberTopup)
+
+        to change live balances.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/BudgetMemberId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetMemberRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMember'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: deleteBudgetMember
+      tags:
+        - Budget Members
+      summary: Remove budget member
+      description: |
+        Deletes the budget member. If the member has an associated card,
+        the card is revoked asynchronously. A budget must retain at least one
+        member.
+
+        **Side effect:** On budgets with per-member limits, removing a member
+        reduces the budget's total limit and available amount by the member's
+        share.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/BudgetMemberId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/owners:
+    get:
+      operationId: listBudgetOwners
+      tags:
+        - Budget Owners
+      summary: List budget owners
+      description: Lists owners of the budget.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - $ref: '#/components/parameters/IsDeleted'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetOwnerListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    post:
+      operationId: createBudgetOwner
+      tags:
+        - Budget Owners
+      summary: Add budget owner
+      description: |
+        Adds a user (or pending invite) as an owner of the budget. Provide
+        exactly one of `user` or `invite`. If an invite has already been
+        accepted, the response will contain `user` rather than `invite`.
+
+        If the same user or invite was previously removed from this budget,
+        the original record is reinstated rather than a new one created — the
+        returned `id` will match the original owner's `id`.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetOwnerRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetOwner'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/owners/{budget_owner_id}:
+    delete:
+      operationId: deleteBudgetOwner
+      tags:
+        - Budget Owners
+      summary: Remove budget owner
+      description: >-
+        Removes the owner from the budget. A budget must retain at least one
+        active owner.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/BudgetOwnerId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}/topups:
+    get:
+      operationId: listBudgetMemberTopups
+      tags:
+        - Budget Topups
+      summary: List budget member topups
+      description: List the topups for a budget member.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/BudgetMemberId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetTopupListResponse'
+    post:
+      operationId: createBudgetMemberTopup
+      tags:
+        - Budget Topups
+      summary: Create budget member topup
+      description: >-
+        Increase or decrease the available amount of a budget member. Only
+        permitted when `has_member_limits` is `true` for the budget.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/BudgetId'
+        - $ref: '#/components/parameters/BudgetMemberId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetTopupCreate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetTopup'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  non_field_errors:
+                    type: array
+                    items:
+                      type: string
+                      example: >-
+                        Cannot topup budget member when budget does not have
+                        member limits
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/balance:
+    get:
+      operationId: listBalances
+      tags:
+        - Statements
+      summary: Get account balances
+      description: >
+        Retrieve real-time account balances for all currencies associated with
+        your business. This endpoint returns the current balance for each
+        currency wallet associated with your business account.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Balance'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/custom-fields:
+    get:
+      operationId: listCustomFields
+      tags:
+        - Custom Fields
+      summary: List custom fields
+      description: Returns a paginated list of custom fields for the given business.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+    post:
+      operationId: createCustomField
+      tags:
+        - Custom Fields
+      summary: Create a custom field
+      description: >-
+        Creates a new custom field for the given business. The `created_by`
+        value will be set to `PUBLIC_API`.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomFieldRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomField'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/custom-fields/{custom_field_id}:
+    get:
+      operationId: getCustomField
+      tags:
+        - Custom Fields
+      summary: Get a custom field
+      description: Returns a single custom field by ID.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomField'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    patch:
+      operationId: updateCustomField
+      tags:
+        - Custom Fields
+      summary: Update a custom field
+      description: >
+        Partially updates a custom field.
+
+
+        **Restrictions for accounting integration fields** (created by Xero,
+        MYOB, QuickBooks, NetSuite, or Business Central): the `name` field
+        cannot be changed. Only `budget_setting` can be updated.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomFieldRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomField'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: deleteCustomField
+      tags:
+        - Custom Fields
+      summary: Delete a custom field
+      description: >-
+        Deletes a custom field. This also removes all associated options and
+        budget links.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/custom-fields/{custom_field_id}/options:
+    get:
+      operationId: listCustomFieldOptions
+      tags:
+        - Custom Field Options
+      summary: List custom field options
+      description: >-
+        Returns a paginated list of all options for the given custom field,
+        including disabled ones.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldOptionListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    post:
+      operationId: createCustomFieldOption
+      tags:
+        - Custom Field Options
+      summary: Create a custom field option
+      description: >
+        Adds a new option to a `LIST` type custom field.
+
+
+        Not permitted for `FREE_TEXT` custom fields or custom fields created by
+        accounting integrations.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomFieldOptionRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldOption'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/custom-fields/{custom_field_id}/options/{option_id}:
+    patch:
+      operationId: updateCustomFieldOption
+      tags:
+        - Custom Field Options
+      summary: Update a custom field option
+      description: >
+        Partially updates a custom field option.
+
+
+        **Accounting integration fields** (Xero, MYOB, QuickBooks, NetSuite,
+        Business Central): only `enabled` can be changed. The `text` field
+        cannot be modified.
+
+
+        **Non-accounting-integration fields** (MANUAL, PUBLIC_API): only `text`
+        can be changed. The `enabled` field cannot be modified — delete and
+        recreate options instead.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+        - $ref: '#/components/parameters/CustomFieldOptionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomFieldOptionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldOption'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: deleteCustomFieldOption
+      tags:
+        - Custom Field Options
+      summary: Delete a custom field option
+      description: >
+        Permanently deletes a custom field option.
+
+
+        Not permitted for options belonging to custom fields created by
+        accounting integrations.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+        - $ref: '#/components/parameters/CustomFieldOptionId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/custom-fields/{custom_field_id}/budgets:
+    get:
+      operationId: listCustomFieldBudgets
+      tags:
+        - Custom Field Budgets
+      summary: List budgets linked to a custom field
+      description: >-
+        Returns a paginated list of budgets that have this custom field
+        assigned.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldBudgetListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    post:
+      operationId: linkCustomFieldBudget
+      tags:
+        - Custom Field Budgets
+      summary: Link a budget to a custom field
+      description: >-
+        Assigns a custom field to a budget. The budget must belong to the same
+        business. Only permitted when the custom field's `budget_setting` is
+        `SOME`.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomFieldBudgetRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldBudget'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/custom-fields/{custom_field_id}/budgets/{budget_id}:
+    delete:
+      operationId: unlinkCustomFieldBudget
+      tags:
+        - Custom Field Budgets
+      summary: Unlink a budget from a custom field
+      description: Removes the link between a custom field and a budget.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CustomFieldId'
+        - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/accounting-codes:
+    get:
+      operationId: listAccountingCodes
+      tags:
+        - Accounting Codes
+      summary: List accounting codes
+      description: Returns a paginated list of GL codes for the given business.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingCodeListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+    post:
+      operationId: upsertAccountingCode
+      tags:
+        - Accounting Codes
+      summary: Create or update an accounting code
+      description: >
+        Creates or updates a GL code for the business (upsert by `code`).
+
+
+        - If a GL code with the given `code` already exists, its `name` is
+        updated.
+
+        - If a previously soft-deleted GL code with that `code` exists, it is
+        restored.
+
+        - Otherwise a new record is created.
+
+
+        Only available for businesses with a manual integration or no
+        integration. If no integration exists, a manual integration is
+        automatically created. Returns `400` if the business has a connected
+        accounting provider (Xero, MYOB, NetSuite, QuickBooks, Business
+        Central).
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountingCodeRequest'
+      responses:
+        '200':
+          description: OK (existing code updated or restored)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingCode'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingCode'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/accounting-codes/{accounting_code_id}:
+    delete:
+      operationId: deleteAccountingCode
+      tags:
+        - Accounting Codes
+      summary: Delete an accounting code
+      description: >
+        Soft-deletes a GL code. Only available for businesses with a manual
+        integration.
+
+
+        Any category mapped to this GL code will have its mapping cleared.
+        Business admins and accountants will receive an
+        `ACCOUNTING_CODE_DELETED` notification.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/AccountingCodeId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request (e.g. business has a non-manual accounting integration)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/categories:
+    get:
+      operationId: listCategories
+      tags:
+        - Categories
+      summary: List categories
+      description: Returns a paginated list of expense categories for the given business.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+        - name: custom
+          in: query
+          required: false
+          description: >-
+            Filter by category type. `true` returns only custom categories;
+            `false` returns only system-defined categories. Omit to return all.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+    post:
+      operationId: createCategory
+      tags:
+        - Categories
+      summary: Create a category
+      description: >-
+        Creates a new custom category (`custom: true`) for the business. The
+        name must be unique within the business.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/categories/{category_id}:
+    patch:
+      operationId: updateCategory
+      tags:
+        - Categories
+      summary: Update a category
+      description: >
+        Updates an existing category. Accepted fields depend on the category
+        type:
+
+
+        - Custom categories (`custom: true`): `name` and `accounting_code_id`
+        are mutable; `enabled` returns 400.
+
+        - System categories (`custom: false`): `enabled` and
+        `accounting_code_id` are mutable; `name` returns 400.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CategoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+    delete:
+      operationId: deleteCategory
+      tags:
+        - Categories
+      summary: Delete a category
+      description: >-
+        Soft-deletes a custom category. Returns `400` if the category is
+        system-defined (`custom: false`).
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/CategoryId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request (system categories cannot be deleted)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/tax-rates:
+    get:
+      operationId: listTaxRates
+      tags:
+        - Tax Rates
+      x-badges:
+        - name: Beta
+          color: orange
+      summary: List tax rates
+      description: >
+        Returns a paginated list of tax rates for the given business, ordered by
+        name.
+
+
+        For businesses with a connected accounting integration (Xero, MYOB,
+        NetSuite, QuickBooks, Business Central), returns the tax rates synced
+        from that integration. Otherwise, returns the business's own manually
+        configured tax rates. Soft-deleted tax rates are excluded.
+
+
+        > **Beta:** This endpoint is in beta and is being rolled out
+        progressively. If tax rates are not yet enabled for your business, the
+        endpoint returns an empty `results` array.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/PaginationOffset'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxRateListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+        - BearerAuth: []
+  /v1/businesses/{client_id}/tax-rates/{tax_rate_id}:
+    get:
+      operationId: getTaxRate
+      tags:
+        - Tax Rates
+      x-badges:
+        - name: Beta
+          color: orange
+      summary: Get tax rate
+      description: >
+        Returns a single tax rate for the given business. Returns `404` if the
+        tax rate does not exist or does not belong to the business.
+
+
+        > **Beta:** This endpoint is in beta and is being rolled out
+        progressively. If tax rates are not yet enabled for your business, this
+        endpoint returns `404`.
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/TaxRateId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxRate'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - BearerAuth: []

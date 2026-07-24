@@ -1,0 +1,115 @@
+aid: weel
+name: Weel
+review:
+  question: Does Weel publish a real public developer portal with a downloadable OpenAPI, and what is its API posture?
+  answer: true
+  date: '2026-07-24'
+  reviewer: API Evangelist
+  developerPortalConfirmed: true
+  openapiHarvested: true
+findings:
+  summary: |
+    Weel (formerly DiviPay) ships a genuine, public, Redocly-based developer
+    portal at https://developer.letsweel.com/ (HTTP 200). It documents a single
+    unified "Weel Open API" — a REST API on the spend / AP-AR seam rather than
+    a payment rail. Weel is not an acquirer or NPP-connected money-movement
+    player; it is an Australian/New Zealand spend management platform that
+    issues Visa debit cards (BIN-sponsor / issuer-processor upstream) and reads
+    and writes budgets, users, transactions, custom fields, accounting codes,
+    categories, invites, and top-ups.
+
+    ONE downloadable OpenAPI was harvested VERBATIM: OpenAPI 3.1.0, title
+    "Weel OpenAPI", version v1, 30 operations across 15 resource tags
+    (Accounting Codes, Budget Members, Budget Owners, Budget Topups, Budgets,
+    Categories, Custom Field Budgets, Custom Field Options, Custom Fields,
+    Invites, Roles, Statements, Tax Rates, Transactions, Users). Single server:
+    https://public.letsweel.com. Business-scoped paths under
+    /v1/businesses/{client_id}/... plus /v2/.../transactions.
+
+    Auth model: HTTP bearer token (securityScheme BearerAuth, type http /
+    scheme bearer). API keys are created in-app under Settings > API and do not
+    expire until revoked. No OAuth2, no OpenID Connect, no mTLS/FAPI — none is
+    documented, and no /.well-known/openid-configuration or
+    oauth-authorization-server was served by the portal or API host.
+
+    Webhooks/events: NONE documented; the spec declares no webhooks and the
+    docs describe no event catalog or AsyncAPI. Postman: no public collection
+    found. GraphQL/gRPC: none. API access is gated to the Enterprise plan.
+    Home market: Australia (Melbourne HQ), plus New Zealand.
+  homeMarket: Australia
+  marketSeamNote: |
+    Australia's payments spine is the New Payments Platform (NPP) operated by
+    Australian Payments Plus (AP+) with PayID/PayTo, over the Consumer Data
+    Right. Weel does NOT sit on those rails directly; it is a spend/expense
+    management layer over card issuing (Visa debit) and accounting-system
+    sync (Xero, QuickBooks, MYOB, NetSuite). No ISO 20022, NPP, PayTo, or
+    scheme-clearing documentation is exposed on the public developer surface.
+  transports:
+  - protocol: REST
+    scheme: https
+    baseURL: https://public.letsweel.com
+    documented: true
+  - protocol: Webhooks
+    documented: false
+    note: No webhooks or event catalog documented; the OpenAPI declares no webhooks object.
+  - protocol: GraphQL
+    documented: false
+  - protocol: gRPC
+    documented: false
+  authentication:
+    scheme: HTTP Bearer token (API key)
+    securitySchemeName: BearerAuth
+    oauth2: false
+    openIdConnect: false
+    mtls: false
+    note: Bearer API key generated in-app (Settings > API); no expiry until revoked. No OAuth2/OIDC/mTLS documented.
+  specsHarvested:
+  - file: openapi/weel-openapi.yml
+    format: OpenAPI 3.1.0
+    title: Weel OpenAPI
+    version: v1
+    operations: 30
+    tags: 15
+    sourceURL: https://developer.letsweel.com/_spec/openapi.yaml
+    httpStatus: 200
+    fetchedDate: '2026-07-24'
+sources:
+- url: https://developer.letsweel.com/
+  type: DeveloperPortal
+  httpStatus: 200
+  note: Redocly-based public developer portal; home / overview of the Weel Open API.
+- url: https://developer.letsweel.com/openapi
+  type: APIReference
+  httpStatus: 200
+  note: Rendered API reference (Redoc) for the Weel OpenAPI.
+- url: https://developer.letsweel.com/_spec/openapi.yaml
+  type: OpenAPI
+  httpStatus: 200
+  note: Raw downloadable OpenAPI 3.1.0 source, harvested verbatim to openapi/weel-openapi.yml.
+- url: https://developer.letsweel.com/getting-started/authentication
+  type: Authentication
+  httpStatus: 200
+  note: Documents bearer-token auth via the Authorization header; keys created under Settings > API.
+- url: https://developer.letsweel.com/getting-started/pagination
+  type: Documentation
+  httpStatus: 200
+  note: Pagination guidance for list endpoints.
+- url: https://letsweel.com/product-updates/post/open-api
+  type: Blog
+  httpStatus: 200
+  note: Announcement that the Weel Open API now writes (chart of accounts, custom fields, users, budgets), not just reads.
+- url: https://letsweel.com/pricing
+  type: Pricing
+  httpStatus: 200
+  note: API access and ERP integrations are Enterprise-tier features.
+- url: https://trust.letsweel.com/
+  type: TrustCenter
+  httpStatus: 200
+  note: Weel trust / security center.
+- url: https://api.letsweel.com/
+  type: APIHost
+  httpStatus: 404
+  note: Not the API host; the documented server is https://public.letsweel.com.
+actions:
+  openapiPath: openapi/weel-openapi.yml
+  apisYmlCreated: true

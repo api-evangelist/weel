@@ -1,0 +1,85 @@
+aid: weel
+url: https://raw.githubusercontent.com/api-evangelist/weel/refs/heads/main/apis.yml
+name: Weel
+kind: company
+description: >-
+  Weel (formerly DiviPay, operated by Weel Pty Ltd) is a Melbourne-based
+  all-in-one spend management platform for finance teams in Australia and New
+  Zealand, serving over 4,000 finance teams and 60,000+ card holders. Weel
+  issues virtual and physical Visa debit cards with real-time limits and
+  controls, and layers accounts payable automation, expense management,
+  reimbursements, subscription management, budgets, and approval policies on
+  top. Rather than operating payment rails directly, Weel sits on the spend
+  and AP/AR seam, syncing approved spend into Xero, QuickBooks, MYOB, and
+  NetSuite. On the API posture, Weel ships a genuine public developer portal
+  at developer.letsweel.com (Redocly-based) documenting a single RESTful "Weel
+  Open API" that both reads and writes budgets, users, transactions, custom
+  fields, accounting codes, categories, invites, and top-ups, authenticated
+  with a bearer API key generated in-app. API access is an Enterprise-tier
+  capability. No public webhooks, Postman collection, or OAuth flow are
+  documented as of this review.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Payments
+- Australia
+- Spend Management
+- Expense Management
+- Corporate Cards
+- Accounts Payable
+- Card Issuing
+- Reimbursements
+- Budgets
+- Fintech
+created: '2026-07-24'
+modified: '2026-07-24'
+specificationVersion: '0.19'
+apis:
+- aid: weel:weel-open-api
+  name: Weel Open API
+  description: >-
+    The Weel Open API is a single RESTful interface that programmatically reads
+    and writes a business's spend data in Weel — budgets, budget members,
+    budget owners, budget top-ups, users, roles, transactions, statements,
+    invites, categories, tax rates, accounting codes, and custom fields — to
+    automate expense workflows and build custom integrations. OpenAPI 3.1.0,
+    30 documented operations across 15 resource tags, authenticated with a
+    bearer API key. API access is available on the Enterprise plan.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Spend Management
+  - Expense Management
+  - Budgets
+  - Transactions
+  - Card Issuing
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+common:
+- type: Website
+  url: https://letsweel.com/
+- type: DeveloperPortal
+  url: https://developer.letsweel.com/
+- type: Documentation
+  url: https://developer.letsweel.com/
+- type: APIReference
+  url: https://developer.letsweel.com/openapi
+- type: GettingStarted
+  url: https://developer.letsweel.com/getting-started/authentication
+- type: Pricing
+  url: https://letsweel.com/pricing
+- type: ChangeLog
+  url: https://letsweel.com/product-updates
+- type: TrustCenter
+  url: https://trust.letsweel.com/
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
