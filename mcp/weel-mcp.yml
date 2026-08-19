@@ -161,3 +161,9 @@ tools:
 - name: get_tax_rate
   description: GET /v1/businesses/{client_id}/tax-rates/{tax_rate_id}
   source_operation: openapi/weel-openapi.yml#getTaxRate
+deployment:
+  mode: none
+  verified: derived
+  tools: 51
+  checked: '2026-08-12'
+  source: catalog MCP census

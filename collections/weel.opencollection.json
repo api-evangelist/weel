@@ -1,0 +1,1885 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Weel OpenAPI",
+    "version": "v1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Transactions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v2/businesses/:client_id/transactions",
+            "params": [
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "min_auth_date",
+                "value": "",
+                "type": "query",
+                "description": "The minimum authorised date for the transactions in UTC."
+              },
+              {
+                "name": "max_auth_date",
+                "value": "",
+                "type": "query",
+                "description": "The maximum authorised date for the transactions in UTC."
+              },
+              {
+                "name": "min_cleared_date",
+                "value": "",
+                "type": "query",
+                "description": "The minimum cleared date for the transactions in UTC."
+              },
+              {
+                "name": "max_cleared_date",
+                "value": "",
+                "type": "query",
+                "description": "The maximum cleared date for the transactions in UTC."
+              },
+              {
+                "name": "expense_status",
+                "value": "",
+                "type": "query",
+                "description": "The expense completion status of the transactions."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint allows you to retrieve a list of transactions for a given business. You can filter the transactions by date range, status, and expense completion status.\n"
+        },
+        {
+          "info": {
+            "name": "Get transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v2/businesses/:client_id/transactions/:transaction_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "transaction_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the transaction."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get transaction"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Statements",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List statements",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/statements",
+            "params": [
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "start_date",
+                "value": "",
+                "type": "query",
+                "description": "The start date for this statement in UTC."
+              },
+              {
+                "name": "end_date",
+                "value": "",
+                "type": "query",
+                "description": "The end date for this statement in UTC."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint allows you to retrieve a list of balances for the required period for a given business."
+        },
+        {
+          "info": {
+            "name": "Get account balances",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/balance",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve real-time account balances for all currencies associated with your business. This endpoint returns the current balance for each currency wallet associated with your business account.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/users",
+            "params": [
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint allows you to retrieve a list of users for a given business."
+        },
+        {
+          "info": {
+            "name": "Get user",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/users/:user_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the user."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint allows you to retrieve a user by their ID."
+        },
+        {
+          "info": {
+            "name": "Update user",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/users/:user_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update role, payment types, and/or delegation settings for an active employee.\nAll fields in the request body are optional.\n"
+        },
+        {
+          "info": {
+            "name": "Delete user",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/users/:user_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the user."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes an active employee."
+        },
+        {
+          "info": {
+            "name": "List budget members by user ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/users/:user_id/budget-members",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the user."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This endpoint allows you to retrieve budget members by their user ID."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Roles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List roles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/roles",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the available roles that can be assigned to users within a business."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Invites",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List invites",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/invites",
+            "params": [
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of invites for the given business. Includes both pending and accepted invites; excludes cancelled invites."
+        },
+        {
+          "info": {
+            "name": "Create invite",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/invites",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates and sends an invite to the given email address. Returns the created invite, including its ID for use in the cancel endpoint."
+        },
+        {
+          "info": {
+            "name": "Cancel invite",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/invites/:invite_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "invite_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the invite."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Cancels a pending invite. Returns 400 if the invite has already been accepted."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Budgets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List budgets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets",
+            "params": [
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "is_deleted",
+                "value": "",
+                "type": "query",
+                "description": "Whether the resource is deleted."
+              },
+              {
+                "name": "budget_type",
+                "value": "",
+                "type": "query",
+                "description": "The type of budget."
+              },
+              {
+                "name": "has_member_limits",
+                "value": "",
+                "type": "query",
+                "description": "Whether the budget has member limits."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List budgets"
+        },
+        {
+          "info": {
+            "name": "Create a budget",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a budget with the given configuration, initial members, and\nowners. All top-level configuration fields are required — no silent\ndefaults.\n"
+        },
+        {
+          "info": {
+            "name": "Get budget",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get budget"
+        },
+        {
+          "info": {
+            "name": "Update a budget",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates a budget's top-level configuration. To change members or\nowners, use their respective endpoints —\n[budget members](#tag/Budget-Members) and\n[budget owners](#tag/Budget-Owners).\n"
+        },
+        {
+          "info": {
+            "name": "Delete a budget",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes a budget. Cascades to members and owners."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Budget Topups",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List budget topups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/topups",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ]
+          },
+          "docs": "List the topups for a budget."
+        },
+        {
+          "info": {
+            "name": "Create budget topup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/topups",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Increase or decrease the available amount of a budget. Only permitted when `has_member_limits` is `false` for the budget."
+        },
+        {
+          "info": {
+            "name": "List budget member topups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/members/:budget_member_id/topups",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "budget_member_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget member."
+              }
+            ]
+          },
+          "docs": "List the topups for a budget member."
+        },
+        {
+          "info": {
+            "name": "Create budget member topup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/members/:budget_member_id/topups",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "budget_member_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget member."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Increase or decrease the available amount of a budget member. Only permitted when `has_member_limits` is `true` for the budget."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Budget Members",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List budget members",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/members",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "is_deleted",
+                "value": "",
+                "type": "query",
+                "description": "Whether the resource is deleted."
+              },
+              {
+                "name": "user_id",
+                "value": "",
+                "type": "query",
+                "description": "The ID of the user to filter by."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "A budget member is a user who has been invited to a budget."
+        },
+        {
+          "info": {
+            "name": "Add budget member",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/members",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds a user (or pending invite) as a member of the budget. Provide\nexactly one of `user` or `invite`. If an invite has already been\naccepted, the response will contain `user` rather than `invite`.\n\n**Side effect:** On budgets with per-member limits, adding a member\nincreases the budget's total limit and available amount by the new\nmember's `reset_amount`. Re-fetch the budget if you need the\nupdated totals. Shared-pot budgets are unaffected.\n"
+        },
+        {
+          "info": {
+            "name": "Get budget member",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/members/:budget_member_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "budget_member_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget member."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get budget member"
+        },
+        {
+          "info": {
+            "name": "Update budget member",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/members/:budget_member_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "budget_member_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget member."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates a budget member's `reset_amount`. Only valid when the budget has\n`has_member_limits=true` and `reset_period` is not `NEVER`.\n\n**Side effect:** The budget's total limit changes by the difference\nbetween the old and new `reset_amount`. The budget's available amount\nis not touched — use [topups](#tag/Budget-Topups/operation/createBudgetMemberTopup)\nto change live balances.\n"
+        },
+        {
+          "info": {
+            "name": "Remove budget member",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/members/:budget_member_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "budget_member_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget member."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes the budget member. If the member has an associated card,\nthe card is revoked asynchronously. A budget must retain at least one\nmember.\n\n**Side effect:** On budgets with per-member limits, removing a member\nreduces the budget's total limit and available amount by the member's\nshare.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Budget Owners",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List budget owners",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/owners",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "is_deleted",
+                "value": "",
+                "type": "query",
+                "description": "Whether the resource is deleted."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lists owners of the budget."
+        },
+        {
+          "info": {
+            "name": "Add budget owner",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/owners",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds a user (or pending invite) as an owner of the budget. Provide\nexactly one of `user` or `invite`. If an invite has already been\naccepted, the response will contain `user` rather than `invite`.\n\nIf the same user or invite was previously removed from this budget,\nthe original record is reinstated rather than a new one created — the\nreturned `id` will match the original owner's `id`.\n"
+        },
+        {
+          "info": {
+            "name": "Remove budget owner",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/budgets/:budget_id/owners/:budget_owner_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              },
+              {
+                "name": "budget_owner_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget owner."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Removes the owner from the budget. A budget must retain at least one active owner."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Custom Fields",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List custom fields",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of custom fields for the given business."
+        },
+        {
+          "info": {
+            "name": "Create a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new custom field for the given business. The `created_by` value will be set to `PUBLIC_API`."
+        },
+        {
+          "info": {
+            "name": "Get a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a single custom field by ID."
+        },
+        {
+          "info": {
+            "name": "Update a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Partially updates a custom field.\n\n**Restrictions for accounting integration fields** (created by Xero, MYOB, QuickBooks, NetSuite, or Business Central): the `name` field cannot be changed. Only `budget_setting` can be updated.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes a custom field. This also removes all associated options and budget links."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Custom Field Options",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List custom field options",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id/options",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of all options for the given custom field, including disabled ones."
+        },
+        {
+          "info": {
+            "name": "Create a custom field option",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id/options",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds a new option to a `LIST` type custom field.\n\nNot permitted for `FREE_TEXT` custom fields or custom fields created by accounting integrations.\n"
+        },
+        {
+          "info": {
+            "name": "Update a custom field option",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id/options/:option_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              },
+              {
+                "name": "option_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field option."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Partially updates a custom field option.\n\n**Accounting integration fields** (Xero, MYOB, QuickBooks, NetSuite, Business Central): only `enabled` can be changed. The `text` field cannot be modified.\n\n**Non-accounting-integration fields** (MANUAL, PUBLIC_API): only `text` can be changed. The `enabled` field cannot be modified — delete and recreate options instead.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a custom field option",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id/options/:option_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              },
+              {
+                "name": "option_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field option."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Permanently deletes a custom field option.\n\nNot permitted for options belonging to custom fields created by accounting integrations.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Custom Field Budgets",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List budgets linked to a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id/budgets",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of budgets that have this custom field assigned."
+        },
+        {
+          "info": {
+            "name": "Link a budget to a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id/budgets",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Assigns a custom field to a budget. The budget must belong to the same business. Only permitted when the custom field's `budget_setting` is `SOME`."
+        },
+        {
+          "info": {
+            "name": "Unlink a budget from a custom field",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/custom-fields/:custom_field_id/budgets/:budget_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "custom_field_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the custom field."
+              },
+              {
+                "name": "budget_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the budget."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Removes the link between a custom field and a budget."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Accounting Codes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List accounting codes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/accounting-codes",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of GL codes for the given business."
+        },
+        {
+          "info": {
+            "name": "Create or update an accounting code",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/accounting-codes",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates or updates a GL code for the business (upsert by `code`).\n\n- If a GL code with the given `code` already exists, its `name` is updated.\n- If a previously soft-deleted GL code with that `code` exists, it is restored.\n- Otherwise a new record is created.\n\nOnly available for businesses with a manual integration or no integration. If no integration exists, a manual integration is automatically created. Returns `400` if the business has a connected accounting provider (Xero, MYOB, NetSuite, Qu"
+        },
+        {
+          "info": {
+            "name": "Delete an accounting code",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/accounting-codes/:accounting_code_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "accounting_code_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the accounting code (GL code)."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Soft-deletes a GL code. Only available for businesses with a manual integration.\n\nAny category mapped to this GL code will have its mapping cleared. Business admins and accountants will receive an `ACCOUNTING_CODE_DELETED` notification.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Categories",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List categories",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/categories",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              },
+              {
+                "name": "custom",
+                "value": "",
+                "type": "query",
+                "description": "Filter by category type. `true` returns only custom categories; `false` returns only system-defined categories. Omit to return all."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of expense categories for the given business."
+        },
+        {
+          "info": {
+            "name": "Create a category",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/categories",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new custom category (`custom: true`) for the business. The name must be unique within the business."
+        },
+        {
+          "info": {
+            "name": "Update a category",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/categories/:category_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "category_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the category."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates an existing category. Accepted fields depend on the category type:\n\n- Custom categories (`custom: true`): `name` and `accounting_code_id` are mutable; `enabled` returns 400.\n- System categories (`custom: false`): `enabled` and `accounting_code_id` are mutable; `name` returns 400.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a category",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/categories/:category_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "category_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the category."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Soft-deletes a custom category. Returns `400` if the category is system-defined (`custom: false`)."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Tax Rates",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List tax rates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/tax-rates",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Offset to retrieve items from."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of items per page."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a paginated list of tax rates for the given business, ordered by name.\n\nFor businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business Central), returns the tax rates synced from that integration. Otherwise, returns the business's own manually configured tax rates. Soft-deleted tax rates are excluded.\n\n> **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, the endpoint returns an "
+        },
+        {
+          "info": {
+            "name": "Get tax rate",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://public.letsweel.com/v1/businesses/:client_id/tax-rates/:tax_rate_id",
+            "params": [
+              {
+                "name": "client_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the business."
+              },
+              {
+                "name": "tax_rate_id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the tax rate."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a single tax rate for the given business. Returns `404` if the tax rate does not exist or does not belong to the business.\n\n> **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, this endpoint returns `404`.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
