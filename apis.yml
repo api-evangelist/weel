@@ -27,6 +27,17 @@ tags:
 - Corporate Cards
 - Accounts Payable
 - Card Issuing
+- Reimbursement
+- Budgets
+- Fintech
+tags_raw:
+- Payments
+- Australia
+- Spend Management
+- Expense Management
+- Corporate Cards
+- Accounts Payable
+- Card Issuing
 - Reimbursements
 - Budgets
 - Fintech
@@ -47,6 +58,12 @@ apis:
   humanURL: https://developer.letsweel.com/openapi
   baseURL: https://public.letsweel.com
   tags:
+  - Spend Management
+  - Expense Management
+  - Budgets
+  - Transaction
+  - Card Issuing
+  tags_raw:
   - Spend Management
   - Expense Management
   - Budgets
