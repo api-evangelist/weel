@@ -45,33 +45,24 @@ created: '2026-07-24'
 modified: '2026-07-24'
 specificationVersion: '0.23'
 apis:
-- aid: weel:weel-open-api
-  name: Weel Open API
+- aid: weel:weel-accounting-codes-api
+  name: Weel Accounting Codes API
   description: >-
-    The Weel Open API is a single RESTful interface that programmatically reads
-    and writes a business's spend data in Weel — budgets, budget members,
-    budget owners, budget top-ups, users, roles, transactions, statements,
-    invites, categories, tax rates, accounting codes, and custom fields — to
-    automate expense workflows and build custom integrations. OpenAPI 3.1.0,
-    30 documented operations across 15 resource tags, authenticated with a
-    bearer API key. API access is available on the Enterprise plan.
+    This group of endpoints allows you to manage GL codes (accounting codes) for your business.
+
+
+    GL codes are used to classify expenses for bookkeeping export. Businesses with a connected accounting
+    integration (Xero, MYOB, NetSuite, QuickBooks, Business Central) cannot create or delete GL codes
+    via the API — those are managed by the integration sync. Businesses with a manual integration or no
+    integration can freely create, update, and delete GL codes. A manual integration is automatically
+    created on the first POST if none exists.
   humanURL: https://developer.letsweel.com/openapi
   baseURL: https://public.letsweel.com
   tags:
-  - Spend Management
-  - Expense Management
-  - Budgets
-  - Transaction
-  - Card Issuing
-  tags_raw:
-  - Spend Management
-  - Expense Management
-  - Budgets
-  - Transactions
-  - Card Issuing
+  - Accounting Codes
   properties:
   - type: OpenAPI
-    url: openapi/weel-openapi.yml
+    url: openapi/weel-accounting-codes-api-openapi.yml
   - type: Documentation
     url: https://developer.letsweel.com/
   - type: APIReference
@@ -80,12 +71,499 @@ apis:
     url: https://developer.letsweel.com/getting-started/authentication
   - type: GettingStarted
     url: https://developer.letsweel.com/getting-started/authentication
-  - type: MCPServer
-    url: mcp/weel-mcp.yml
   - type: ToolCrosswalk
     url: mcp/weel-tool-crosswalk.yml
-  - type: Overlay
-    url: overlays/weel-openapi-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-budget-members-api
+  name: Weel Budget Members API
+  description: >-
+    This group of endpoints allows you to retrieve and manage budget member data, including listing budget
+    members and fetching individual budget member details.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Budget Members
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-budget-members-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-budget-owners-api
+  name: Weel Budget Owners API
+  description: >-
+    This group of endpoints allows you to retrieve and manage budget owners. A budget owner is a user
+    (or pending invite) who can approve spend, top up, and otherwise manage the budget.
+
+
+    A budget must always have at least one active owner — deleting the last remaining owner is not permitted.
+    Adding an owner who was previously removed will reinstate the original record rather than create a
+    duplicate.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Budget Owners
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-budget-owners-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-budget-topups-api
+  name: Weel Budget Topups API
+  description: >-
+    This group of endpoints allows you to retrieve and create budget topups. Topups are used to increase
+    or decrease the available amount of a budget or budget member.
+
+
+    Topups will be automatically approved, unless a Workflow or Policy has been configured in Weel for
+    that requires approval for budget topups.
+
+
+    There are two types of topups:
+      - Budget topups are used to increase or decrease the available amount of a budget. This is only
+    permitted when `has_member_limits` is `false` for the budget.
+      - Budget member topups are used to increase or decrease the available amount of a budget member.
+    This is only permitted when `has_member_limits` is `true` for the budget.
+
+    `has_member_limits` is set to `true` when this toggle is enabled in the budget creation form.
+      ![Has Member Limits is true](assets/has-member-limits-true.png)
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Budget Topups
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-budget-topups-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-budgets-api
+  name: Weel Budgets API
+  description: >-
+    This group of endpoints allows you to retrieve and manage budget data, including listing budgets and
+    fetching individual budget details.
+
+
+    Budgets are organised in a hierarchy where a budget can have multiple members. Each member is associated
+    with a user. Funds can be allocated at the budget level or at the member level, using the flag `has_member_limits`.
+
+
+    ![Budget Hierachy](assets/budget-hierarchy.png)
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Budgets
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-budgets-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-categories-api
+  name: Weel Categories API
+  description: >-
+    This group of endpoints allow you to manage expense categories for your business.
+
+
+    Categories classify transactions. System-defined categories (`custom: false`) can only have their
+    `enabled` state toggled. Custom categories (`custom: true`) can have their `name` updated and can
+    be deleted.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Categories
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-categories-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-custom-field-budgets-api
+  name: Weel Custom Field Budgets API
+  description: >-
+    This group of endpoints allows you to link custom fields to budgets, controlling which budgets have
+    a custom field assigned.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Custom Field Budgets
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-custom-field-budgets-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-custom-field-options-api
+  name: Weel Custom Field Options API
+  description: >-
+    This group of endpoints allows you to manage the list options for a `LIST` type custom field. Options
+    created via the Public API can be disabled or deleted.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Custom Field Options
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-custom-field-options-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-custom-fields-api
+  name: Weel Custom Fields API
+  description: >-
+    This group of endpoints allows you to create and manage custom fields (dimensions/cost centres) for
+    your business.
+
+
+    Custom fields can be of type `LIST` (with predefined options) or `FREE_TEXT`. Custom fields created
+    via the Public API have a `created_by` value of `PUBLIC_API`.
+
+
+    Custom fields created by accounting integrations (Xero, MYOB, QuickBooks, NetSuite, Business Central)
+    have restrictions: their name and type cannot be modified via the Public API.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Custom Fields
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-custom-fields-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-invites-api
+  name: Weel Invites API
+  description: >-
+    This group of endpoints allows you to create, list, and cancel pending user invitations. An invite
+    exists until the recipient accepts it, at which point they appear as a user in the Users endpoints.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Invites
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-invites-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-roles-api
+  name: Weel Roles API
+  description: >-
+    This group of endpoints allows you to retrieve the roles available within a business and the permissions
+    assigned to each role.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Roles
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-roles-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-statements-api
+  name: Weel Statements API
+  description: >-
+    This group of endpoints allows you to retrieve a list of balances for the required period for a given
+    business.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Statements
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-statements-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-tax-rates-api
+  name: Weel Tax Rates API
+  description: >-
+    This group of endpoints allows you to retrieve the tax rates configured for your business. Tax rates
+    are read-only via the Public API.
+
+
+    For businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business
+    Central), the tax rates synced from that integration are returned. Businesses without a connected
+    integration get their own manually configured tax rates.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Tax Rates
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-tax-rates-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-transactions-api
+  name: Weel Transactions API
+  description: >-
+    This group of endpoints allows you to retrieve and manage transaction data, including listing transactions
+    with various filters and fetching individual transaction details.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
+  - type: ErrorCatalog
+    url: errors/weel-problem-types.yml
+  - type: DataModel
+    url: data-model/weel-data-model.yml
+  - type: Conventions
+    url: conventions/weel-conventions.yml
+  - type: Lifecycle
+    url: lifecycle/weel-lifecycle.yml
+  - type: Conformance
+    url: conformance/weel-conformance.yml
+- aid: weel:weel-users-api
+  name: Weel Users API
+  description: >-
+    This group of endpoints allows you to retrieve and manage user data, including listing users and fetching
+    individual user details.
+  humanURL: https://developer.letsweel.com/openapi
+  baseURL: https://public.letsweel.com
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/weel-users-api-openapi.yml
+  - type: Documentation
+    url: https://developer.letsweel.com/
+  - type: APIReference
+    url: https://developer.letsweel.com/openapi
+  - type: Authentication
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: GettingStarted
+    url: https://developer.letsweel.com/getting-started/authentication
+  - type: ToolCrosswalk
+    url: mcp/weel-tool-crosswalk.yml
   - type: ErrorCatalog
     url: errors/weel-problem-types.yml
   - type: DataModel
@@ -97,6 +575,10 @@ apis:
   - type: Conformance
     url: conformance/weel-conformance.yml
 common:
+- type: MCPServer
+  url: mcp/weel-mcp.yml
+- type: Overlay
+  url: overlays/weel-openapi-overlay.yaml
 - type: AgenticAccess
   url: agentic-access/weel-agentic-access.yml
 - type: VulnerabilityDisclosure
