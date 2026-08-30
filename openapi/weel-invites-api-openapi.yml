@@ -1,0 +1,260 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Invites API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Invites
+  description: This group of endpoints allows you to create, list, and cancel pending user invitations. An invite exists until the recipient accepts it, at which point they appear as a user in the Users endpoints.
+paths:
+  /v1/businesses/{client_id}/invites:
+    get:
+      operationId: listInvites
+      description: Returns a paginated list of invites for the given business. Includes both pending and accepted invites; excludes cancelled invites.
+      tags:
+      - Invites
+      summary: List invites
+      parameters:
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      - $ref: '#/components/parameters/ClientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+    post:
+      operationId: createInvite
+      description: Creates and sends an invite to the given email address. Returns the created invite, including its ID for use in the cancel endpoint.
+      tags:
+      - Invites
+      summary: Create invite
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invite'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/invites/{invite_id}:
+    delete:
+      operationId: cancelInvite
+      description: Cancels a pending invite. Returns 400 if the invite has already been accepted.
+      tags:
+      - Invites
+      summary: Cancel invite
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/InviteId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request — invite has already been accepted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  parameters:
+    InviteId:
+      name: invite_id
+      in: path
+      description: The ID of the invite.
+      required: true
+      schema:
+        type: integer
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  schemas:
+    PaymentType:
+      type: string
+      enum:
+      - bills
+      - cards
+      - reimbursements
+    InviteCreateRequest:
+      type: object
+      required:
+      - email
+      - role_id
+      - payment_types
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address to send the invite to.
+          example: jane.doe@example.com
+        role_id:
+          type: string
+          format: uuid
+          description: The ID of the role to assign to the invitee. Must belong to the business.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        payment_types:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          description: The payment types the invitee will have access to. Must be a non-empty list.
+          example:
+          - cards
+          - reimbursements
+    InviteListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of invites that match the query.
+          example: 10
+        next:
+          type:
+          - string
+          - 'null'
+          description: The URL to the next page of invites.
+          example: offset=50&limit=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: The URL to the previous page of invites.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invite'
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the invite.
+          example: 99
+        email:
+          type: string
+          format: email
+          description: The email address the invite was sent to.
+          example: jane.doe@example.com
+        role_id:
+          type: string
+          format: uuid
+          description: The ID of the role assigned to the invitee.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        role:
+          type: string
+          description: The name of the role assigned to the invitee.
+          example: Team Member
+        payment_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          description: The payment types the invitee will have access to.
+          example:
+          - cards
+          - reimbursements
+        used:
+          type: boolean
+          description: Whether the invite has been accepted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time the invite was created in UTC.
+          example: '2026-05-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time the invite was last updated in UTC.
+          example: '2026-05-01T00:00:00Z'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

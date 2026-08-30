@@ -1,0 +1,221 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Custom Field Budgets API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Custom Field Budgets
+  description: This group of endpoints allows you to link custom fields to budgets, controlling which budgets have a custom field assigned.
+paths:
+  /v1/businesses/{client_id}/custom-fields/{custom_field_id}/budgets:
+    get:
+      operationId: listCustomFieldBudgets
+      tags:
+      - Custom Field Budgets
+      summary: List budgets linked to a custom field
+      description: Returns a paginated list of budgets that have this custom field assigned.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/CustomFieldId'
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldBudgetListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+    post:
+      operationId: linkCustomFieldBudget
+      tags:
+      - Custom Field Budgets
+      summary: Link a budget to a custom field
+      description: Assigns a custom field to a budget. The budget must belong to the same business. Only permitted when the custom field's `budget_setting` is `SOME`.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/CustomFieldId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomFieldBudgetRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldBudget'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/custom-fields/{custom_field_id}/budgets/{budget_id}:
+    delete:
+      operationId: unlinkCustomFieldBudget
+      tags:
+      - Custom Field Budgets
+      summary: Unlink a budget from a custom field
+      description: Removes the link between a custom field and a budget.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/CustomFieldId'
+      - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  parameters:
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    CustomFieldId:
+      name: custom_field_id
+      in: path
+      description: The ID of the custom field.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+  schemas:
+    CreateCustomFieldBudgetRequest:
+      type: object
+      required:
+      - budget
+      properties:
+        budget:
+          type: string
+          format: uuid
+          description: The ID of the budget to link to this custom field.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    CustomFieldBudget:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier of the linked budget.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        name:
+          type: string
+          description: The name of the linked budget.
+          example: Marketing Q1
+    CustomFieldBudgetListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of budgets linked to this custom field.
+          example: 3
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldBudget'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

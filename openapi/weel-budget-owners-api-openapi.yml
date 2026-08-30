@@ -1,0 +1,355 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Budget Owners API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Budget Owners
+  description: 'This group of endpoints allows you to retrieve and manage budget owners. A budget owner is a user (or pending invite) who can approve spend, top up, and otherwise manage the budget.
+
+
+    A budget must always have at least one active owner — deleting the last remaining owner is not permitted. Adding an owner who was previously removed will reinstate the original record rather than create a duplicate.
+
+    '
+paths:
+  /v1/businesses/{client_id}/budgets/{budget_id}/owners:
+    get:
+      operationId: listBudgetOwners
+      tags:
+      - Budget Owners
+      summary: List budget owners
+      description: Lists owners of the budget.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      - $ref: '#/components/parameters/IsDeleted'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetOwnerListResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+    post:
+      operationId: createBudgetOwner
+      tags:
+      - Budget Owners
+      summary: Add budget owner
+      description: 'Adds a user (or pending invite) as an owner of the budget. Provide
+
+        exactly one of `user` or `invite`. If an invite has already been
+
+        accepted, the response will contain `user` rather than `invite`.
+
+
+        If the same user or invite was previously removed from this budget,
+
+        the original record is reinstated rather than a new one created — the
+
+        returned `id` will match the original owner''s `id`.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetOwnerRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetOwner'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/owners/{budget_owner_id}:
+    delete:
+      operationId: deleteBudgetOwner
+      tags:
+      - Budget Owners
+      summary: Remove budget owner
+      description: Removes the owner from the budget. A budget must retain at least one active owner.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      - $ref: '#/components/parameters/BudgetOwnerId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  parameters:
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    BudgetOwnerId:
+      name: budget_owner_id
+      in: path
+      description: The ID of the budget owner.
+      required: true
+      schema:
+        type: string
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    IsDeleted:
+      name: is_deleted
+      in: query
+      description: Whether the resource is deleted.
+      schema:
+        type: boolean
+        example: false
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  schemas:
+    PaymentType:
+      type: string
+      enum:
+      - bills
+      - cards
+      - reimbursements
+    SubUser:
+      type:
+      - object
+      - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
+    BudgetOwnerListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budget owners that match the query.
+          example: 3
+        next:
+          type: string
+          description: The URL to the next page of budget owners.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budget owners.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetOwner'
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the invite.
+          example: 99
+        email:
+          type: string
+          format: email
+          description: The email address the invite was sent to.
+          example: jane.doe@example.com
+        role_id:
+          type: string
+          format: uuid
+          description: The ID of the role assigned to the invitee.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        role:
+          type: string
+          description: The name of the role assigned to the invitee.
+          example: Team Member
+        payment_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          description: The payment types the invitee will have access to.
+          example:
+          - cards
+          - reimbursements
+        used:
+          type: boolean
+          description: Whether the invite has been accepted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time the invite was created in UTC.
+          example: '2026-05-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time the invite was last updated in UTC.
+          example: '2026-05-01T00:00:00Z'
+    BudgetOwner:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget owner.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        user:
+          description: The user for the budget owner. Only present once the underlying invite has been accepted.
+          $ref: '#/components/schemas/SubUser'
+        invite:
+          description: The pending invite for the budget owner. Only present while the user has not yet accepted their invite.
+          $ref: '#/components/schemas/Invite'
+        is_deleted:
+          type: boolean
+          description: Whether the budget owner has been removed from the budget.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget owner was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget owner was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    CreateBudgetOwnerRequest:
+      type: object
+      description: 'Provide exactly one of `user` or `invite`. If the invite has already
+
+        been accepted by the time the request is processed, the response will
+
+        contain `user` rather than `invite`.
+
+        '
+      properties:
+        user:
+          type: object
+          description: An accepted user in this business.
+          properties:
+            id:
+              type: integer
+              description: The user's ID.
+              example: 123
+          required:
+          - id
+        invite:
+          type: object
+          description: A pending invite in this business.
+          properties:
+            id:
+              type: string
+              description: The invite's ID.
+              example: e33b7c61-5124-4ba0-b238-e4c573133715
+          required:
+          - id
+      oneOf:
+      - required:
+        - user
+      - required:
+        - invite
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

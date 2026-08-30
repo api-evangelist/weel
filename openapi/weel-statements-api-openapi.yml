@@ -1,0 +1,228 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Statements API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Statements
+  description: This group of endpoints allows you to retrieve a list of balances for the required period for a given business.
+paths:
+  /v1/businesses/{client_id}/statements:
+    get:
+      operationId: listStatements
+      description: This endpoint allows you to retrieve a list of balances for the required period for a given business.
+      tags:
+      - Statements
+      summary: List statements
+      parameters:
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      - $ref: '#/components/parameters/ClientId'
+      - name: start_date
+        in: query
+        required: true
+        description: The start date for this statement in UTC.
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        required: true
+        description: The end date for this statement in UTC.
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/balance:
+    get:
+      operationId: listBalances
+      tags:
+      - Statements
+      summary: Get account balances
+      description: 'Retrieve real-time account balances for all currencies associated with your business. This endpoint returns the current balance for each currency wallet associated with your business account.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Balance'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+components:
+  schemas:
+    Balance:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Account balance amount as a decimal number
+          example: 123.45
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          example: AUD
+      required:
+      - balance
+      - currency
+    DailyBalance:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: The date of the daily balance.
+          example: '2024-01-01'
+        opening_balance:
+          type: number
+          description: The opening balance of this date.
+          example: 1000
+        closing_balance:
+          type: number
+          description: The closing balance of this date.
+          example: 1000
+        id:
+          type: string
+          description: The ID of the daily balance.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the balance was generated in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the balance was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    StatementListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of daily balance records for the given period.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of daily balance records.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of daily balance records.
+          example: offset=0&limit=50
+        start_date:
+          type: string
+          format: date
+          description: The start date for this statement in UTC.
+          example: '2024-01-01'
+        end_date:
+          type: string
+          format: date
+          description: The end date for this statement in UTC.
+          example: '2024-01-31'
+        currency:
+          type: string
+          description: The currency of the statement.
+          example: AUD
+        opening_balance:
+          type: number
+          description: The opening balance of the statement.
+          example: 1000
+        closing_balance:
+          type: number
+          description: The closing balance of the statement.
+          example: 1000
+        daily_balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyBalance'
+  parameters:
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

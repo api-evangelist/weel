@@ -1,0 +1,445 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Transactions API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Transactions
+  description: This group of endpoints allows you to retrieve and manage transaction data, including listing transactions with various filters and fetching individual transaction details.
+paths:
+  /v2/businesses/{client_id}/transactions:
+    get:
+      operationId: listTransactions
+      tags:
+      - Transactions
+      summary: List transactions
+      description: 'This endpoint allows you to retrieve a list of transactions for a given business. You can filter the transactions by date range, status, and expense completion status.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      - $ref: '#/components/parameters/ClientId'
+      - name: min_auth_date
+        in: query
+        required: false
+        description: The minimum authorised date for the transactions in UTC.
+        schema:
+          type: string
+          format: date
+      - name: max_auth_date
+        in: query
+        required: false
+        description: The maximum authorised date for the transactions in UTC.
+        schema:
+          type: string
+          format: date
+      - name: min_cleared_date
+        in: query
+        required: false
+        description: The minimum cleared date for the transactions in UTC.
+        schema:
+          type: string
+          format: date
+      - name: max_cleared_date
+        in: query
+        required: false
+        description: The maximum cleared date for the transactions in UTC.
+        schema:
+          type: string
+          format: date
+      - name: expense_status
+        in: query
+        required: false
+        description: The expense completion status of the transactions.
+        schema:
+          type: string
+          enum:
+          - COMPLETE
+          - INCOMPLETE_EXPENSE
+          example: COMPLETE
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+  /v2/businesses/{client_id}/transactions/{transaction_id}:
+    get:
+      operationId: getTransaction
+      tags:
+      - Transactions
+      summary: Get transaction
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/TransactionId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  schemas:
+    TransactionListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of transactions that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of transactions.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of transactions.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    TransactionBudget:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+          - BUDGET
+          - SUBSCRIPTION
+          example: BUDGET
+    TaxRate:
+      type:
+      - object
+      - 'null'
+      description: 'A tax rate applied to a line item. May be `null` when itemised tax rates are enabled for the business but a rate could not be resolved.
+
+        '
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the tax rate.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the tax rate.
+          example: GST
+        rate:
+          type: number
+          description: The tax rate as a decimal fraction.
+          example: 0.1
+        code:
+          type:
+          - string
+          - 'null'
+          description: The tax rate code.
+          example: GST
+        is_default_for:
+          type: string
+          description: Which transaction types the tax rate is the default for.
+          enum:
+          - DOMESTIC
+          - INTERNATIONAL
+          - BOTH
+          - NONE
+          example: DOMESTIC
+        is_enabled:
+          type: boolean
+          description: Whether the tax rate is enabled.
+          example: true
+        source:
+          type: string
+          description: The source of the tax rate.
+          enum:
+          - WEEL
+          - MANUAL
+          - ASP
+          example: WEEL
+    LineItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the line item.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        amount:
+          type: number
+          description: The amount of the line item in AUD.
+          example: 100
+        gst_amount:
+          type: number
+          description: 'The GST amount of the line item. When a `tax_rate` is applied to the line item, this is derived from `tax_rate.rate`.
+
+            '
+          example: 9.09
+        tax_rate:
+          $ref: '#/components/schemas/TaxRate'
+          description: 'The tax rate applied to the line item. This property has three states: it is absent when itemised tax rates are not enabled for the business; it is a `TaxRate` object when a tax rate could be resolved for the line item; and it is `null` when itemised tax rates are enabled for the business but a tax rate could not be resolved for the line item.
+
+            '
+        category:
+          $ref: '#/components/schemas/LineItemCategory'
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+        description:
+          type: string
+          description: The description of the line item.
+          example: Building supplies
+    CustomFieldValue:
+      type: object
+      properties:
+        field_name:
+          type: string
+          description: The name of the custom field.
+          example: Project
+        entry_text:
+          type: string
+          description: The text value of the custom field.
+          example: Project 1
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the transaction.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        cleared_date:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The date the transaction was cleared in UTC.
+          example: '2024-01-01T00:00:00Z'
+        auth_date:
+          type: string
+          format: date-time
+          description: The date the transaction was authorised in UTC.
+          example: '2024-01-01T00:00:00Z'
+        merchant_name:
+          type: string
+          description: The name of the merchant.
+          example: Bunnings Warehouse
+        attendees:
+          type: array
+          description: The names of the attendees of the transaction.
+          items:
+            type: string
+            description: The name of the attendee.
+            example: Jane Doe
+        budget:
+          $ref: '#/components/schemas/TransactionBudget'
+          description: The budget associated with the transaction.
+        currency:
+          type: string
+          description: The currency of the transaction.
+          example: AUD
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+        fx_amount:
+          type: number
+          description: The foreign currency amount of the transaction.
+          example: 100
+        amount:
+          type: number
+          description: The amount of the transaction in AUD (positive for credits, negative for debits).
+          example: -100
+        gst:
+          type: number
+          description: The GST amount of the transaction.
+          example: 9.09
+        expense_status:
+          type: string
+          description: The expense completion status of the transaction.
+          enum:
+          - COMPLETE
+          - INCOMPLETE_EXPENSE
+          example: COMPLETE
+        status:
+          type: string
+          description: The status of the transaction.
+          enum:
+          - CLEARED
+          - AUTHED
+          example: CLEARED
+        transaction_type:
+          type: string
+          description: The type of transaction.
+          enum:
+          - CARD_TRANSACTION
+          - CHARGE
+          - DEPOSIT_DIRECT_CREDIT
+          - DEPOSIT_DIRECT_DEBIT
+          - BILL
+          - REIMBURSEMENT
+          - EXTERNAL_TRANSFER
+          - MANUAL_TRANSFER
+          - CREDIT
+          example: CARD_TRANSACTION
+        user:
+          description: The user who made the transaction.
+          $ref: '#/components/schemas/SubUser'
+        line_items:
+          type: array
+          description: The line items of the transaction.
+          items:
+            $ref: '#/components/schemas/LineItem'
+        receipt_urls:
+          type: array
+          description: The URLs of the receipts for the transaction.
+          items:
+            type: string
+            example: https://divipay-user-production.s3.amazonaws.com/123/68eae8f6-cb90-4403-ba76-a2cc12c3979j.png
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the transaction was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the transaction was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    SubUser:
+      type:
+      - object
+      - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
+    LineItemCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the category.
+          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
+        name:
+          type: string
+          description: The name of the category in Weel.
+          example: Accommodation
+        code:
+          type:
+          - string
+          - 'null'
+          description: The accounting code of the category, if any.
+          example: '6668'
+  parameters:
+    TransactionId:
+      name: transaction_id
+      in: path
+      description: The ID of the transaction.
+      required: true
+      schema:
+        type: string
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

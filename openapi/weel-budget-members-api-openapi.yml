@@ -1,0 +1,474 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Budget Members API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Budget Members
+  description: This group of endpoints allows you to retrieve and manage budget member data, including listing budget members and fetching individual budget member details.
+paths:
+  /v1/businesses/{client_id}/budgets/{budget_id}/members:
+    get:
+      operationId: listBudgetMembers
+      tags:
+      - Budget Members
+      summary: List budget members
+      description: A budget member is a user who has been invited to a budget.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      - $ref: '#/components/parameters/IsDeleted'
+      - name: user_id
+        in: query
+        required: false
+        description: The ID of the user to filter by.
+        schema:
+          type: integer
+          example: 123
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMemberListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+    post:
+      operationId: createBudgetMember
+      tags:
+      - Budget Members
+      summary: Add budget member
+      description: 'Adds a user (or pending invite) as a member of the budget. Provide
+
+        exactly one of `user` or `invite`. If an invite has already been
+
+        accepted, the response will contain `user` rather than `invite`.
+
+
+        **Side effect:** On budgets with per-member limits, adding a member
+
+        increases the budget''s total limit and available amount by the new
+
+        member''s `reset_amount`. Re-fetch the budget if you need the
+
+        updated totals. Shared-pot budgets are unaffected.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetMemberRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMember'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}/members/{budget_member_id}:
+    get:
+      operationId: getBudgetMember
+      tags:
+      - Budget Members
+      summary: Get budget member
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      - $ref: '#/components/parameters/BudgetMemberId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMember'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+    patch:
+      operationId: updateBudgetMember
+      tags:
+      - Budget Members
+      summary: Update budget member
+      description: 'Updates a budget member''s `reset_amount`. Only valid when the budget has
+
+        `has_member_limits=true` and `reset_period` is not `NEVER`.
+
+
+        **Side effect:** The budget''s total limit changes by the difference
+
+        between the old and new `reset_amount`. The budget''s available amount
+
+        is not touched — use [topups](#tag/Budget-Topups/operation/createBudgetMemberTopup)
+
+        to change live balances.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      - $ref: '#/components/parameters/BudgetMemberId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetMemberRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetMember'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+    delete:
+      operationId: deleteBudgetMember
+      tags:
+      - Budget Members
+      summary: Remove budget member
+      description: 'Deletes the budget member. If the member has an associated card,
+
+        the card is revoked asynchronously. A budget must retain at least one
+
+        member.
+
+
+        **Side effect:** On budgets with per-member limits, removing a member
+
+        reduces the budget''s total limit and available amount by the member''s
+
+        share.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      - $ref: '#/components/parameters/BudgetMemberId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  schemas:
+    CreateBudgetMemberRequest:
+      type: object
+      description: 'Provide exactly one of `user` or `invite`. `reset_amount` is required
+
+        when the budget has `has_member_limits=true` and must be omitted
+
+        otherwise.
+
+        '
+      properties:
+        user:
+          type: object
+          description: An accepted user in this business.
+          properties:
+            id:
+              type: integer
+              description: The user's ID.
+              example: 123
+          required:
+          - id
+        invite:
+          type: object
+          description: A pending invite in this business.
+          properties:
+            id:
+              type: string
+              description: The invite's ID.
+              example: e33b7c61-5124-4ba0-b238-e4c573133715
+          required:
+          - id
+        reset_amount:
+          type: number
+          description: 'The member''s spending limit. Required when the budget has
+
+            `has_member_limits=true`. Must be omitted when `has_member_limits=false`
+
+            (the member inherits the budget''s `reset_amount`).
+
+            '
+          example: 500
+      oneOf:
+      - required:
+        - user
+      - required:
+        - invite
+    UpdateBudgetMemberRequest:
+      type: object
+      description: 'Updates the member''s `reset_amount`. Only valid when the budget has
+
+        `has_member_limits=true`.
+
+        '
+      properties:
+        reset_amount:
+          type: number
+          description: The new per-member spending limit.
+          example: 750
+      required:
+      - reset_amount
+    PaymentType:
+      type: string
+      enum:
+      - bills
+      - cards
+      - reimbursements
+    Invite:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the invite.
+          example: 99
+        email:
+          type: string
+          format: email
+          description: The email address the invite was sent to.
+          example: jane.doe@example.com
+        role_id:
+          type: string
+          format: uuid
+          description: The ID of the role assigned to the invitee.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        role:
+          type: string
+          description: The name of the role assigned to the invitee.
+          example: Team Member
+        payment_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          description: The payment types the invitee will have access to.
+          example:
+          - cards
+          - reimbursements
+        used:
+          type: boolean
+          description: Whether the invite has been accepted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time the invite was created in UTC.
+          example: '2026-05-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time the invite was last updated in UTC.
+          example: '2026-05-01T00:00:00Z'
+    BudgetMember:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget member.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        user:
+          description: The user for the budget member. Only present if the user has accepted their invite to Weel.
+          $ref: '#/components/schemas/SubUser'
+        invite:
+          description: The invite for the budget member. Only present if the user has not  accepted their invite to Weel.
+          $ref: '#/components/schemas/Invite'
+        available_amount:
+          type: number
+          description: The available amount of the budget member.
+          example: 800
+        spent_amount:
+          type: number
+          description: The amount of the budget that has been spent by the budget member.
+          example: 200
+        reset_amount:
+          type: number
+          description: The reset amount of the budget member.
+          example: 1000
+        is_deleted:
+          type: boolean
+          description: Whether the budget member is deleted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    SubUser:
+      type:
+      - object
+      - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
+    BudgetMemberListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budget members that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budget members.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budget members.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetMember'
+  parameters:
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    BudgetMemberId:
+      name: budget_member_id
+      in: path
+      description: The ID of the budget member.
+      required: true
+      schema:
+        type: integer
+    IsDeleted:
+      name: is_deleted
+      in: query
+      description: Whether the resource is deleted.
+      schema:
+        type: boolean
+        example: false
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

@@ -1,0 +1,646 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Budgets API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Budgets
+  description: 'This group of endpoints allows you to retrieve and manage budget data, including listing budgets and fetching individual budget details.
+
+
+    Budgets are organised in a hierarchy where a budget can have multiple members. Each member is associated with a user. Funds can be allocated at the budget level or at the member level, using the flag `has_member_limits`.
+
+
+    ![Budget Hierachy](assets/budget-hierarchy.png)
+
+    '
+paths:
+  /v1/businesses/{client_id}/budgets:
+    get:
+      operationId: listBudgets
+      tags:
+      - Budgets
+      summary: List budgets
+      parameters:
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/IsDeleted'
+      - name: budget_type
+        in: query
+        required: false
+        description: The type of budget.
+        schema:
+          type: string
+          enum:
+          - BUDGET
+          - SUBSCRIPTION
+          example: BUDGET
+      - name: has_member_limits
+        in: query
+        required: false
+        description: Whether the budget has member limits.
+        schema:
+          type: boolean
+          example: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+    post:
+      operationId: createBudget
+      tags:
+      - Budgets
+      summary: Create a budget
+      description: 'Creates a budget with the given configuration, initial members, and
+
+        owners. All top-level configuration fields are required — no silent
+
+        defaults.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '429':
+          description: Too Many Requests
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/budgets/{budget_id}:
+    get:
+      operationId: getBudget
+      tags:
+      - Budgets
+      summary: Get budget
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+    patch:
+      operationId: updateBudget
+      tags:
+      - Budgets
+      summary: Update a budget
+      description: 'Updates a budget''s top-level configuration. To change members or
+
+        owners, use their respective endpoints —
+
+        [budget members](#tag/Budget-Members) and
+
+        [budget owners](#tag/Budget-Owners).
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+    delete:
+      operationId: deleteBudget
+      tags:
+      - Budgets
+      summary: Delete a budget
+      description: Deletes a budget. Cascades to members and owners.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/BudgetId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  parameters:
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    IsDeleted:
+      name: is_deleted
+      in: query
+      description: Whether the resource is deleted.
+      schema:
+        type: boolean
+        example: false
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  schemas:
+    BudgetMemberInput:
+      type: object
+      description: 'A member to attach to the budget. Provide exactly one of `user` or
+
+        `invite`. `reset_amount` is required when `has_member_limits` is true
+
+        and must be omitted otherwise; the sum of member `reset_amount` values
+
+        must equal the budget''s `reset_amount`.
+
+        '
+      properties:
+        user:
+          $ref: '#/components/schemas/BudgetUserRef'
+        invite:
+          $ref: '#/components/schemas/BudgetInviteRef'
+        reset_amount:
+          type: number
+          description: The per-member spending cap when has_member_limits is true.
+          example: 250
+      oneOf:
+      - required:
+        - user
+      - required:
+        - invite
+    BudgetUpdateRequest:
+      type: object
+      description: 'Partial update of a budget''s configuration. To change members or
+
+        owners, use their respective endpoints —
+
+        [budget members](#tag/Budget-Members) and
+
+        [budget owners](#tag/Budget-Owners). Toggling `has_member_limits`
+
+        cascades onto existing members (equal split on false→true).
+
+        '
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          example: Sales Team
+        reset_amount:
+          type: number
+          example: 1500
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        has_member_limits:
+          type: boolean
+          example: true
+        rollover_funds:
+          type: boolean
+          example: true
+        limit_categories:
+          type: boolean
+          example: true
+        categories:
+          type: array
+          items:
+            type: string
+            format: uuid
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCustomFieldInput'
+    BudgetCreateRequest:
+      type: object
+      required:
+      - name
+      - reset_amount
+      - reset_period
+      - has_member_limits
+      - rollover_funds
+      - members
+      - owners
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: The name of the budget.
+          example: Sales Team
+        reset_amount:
+          type: number
+          description: The amount the budget resets to each period.
+          example: 1000
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        has_member_limits:
+          type: boolean
+          description: 'When true, each member has its own `reset_amount` cap and the sum
+
+            of member caps must equal the budget `reset_amount`. When false,
+
+            members share the budget''s pot.
+
+            '
+          example: false
+        rollover_funds:
+          type: boolean
+          description: When true, unspent balance rolls over to the next period.
+          example: false
+        members:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/BudgetMemberInput'
+        owners:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/BudgetOwnerInput'
+        limit_categories:
+          type: boolean
+          description: 'When true, only the categories listed in `categories` are visible
+
+            on the budget. When false, all business categories are visible.
+
+            '
+          default: false
+          example: false
+        categories:
+          type: array
+          description: Category ids that should be visible on the budget.
+          items:
+            type: string
+            format: uuid
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCustomFieldInput'
+    BudgetInviteRef:
+      type: object
+      description: Reference to an outstanding invite by id.
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the invite.
+          example: f4c1e25a-2a78-4f4f-9d3e-1c3a96cf21b1
+    BudgetOwnerInput:
+      type: object
+      description: 'An owner (budget approver) to attach to the budget. Provide exactly
+
+        one of `user` or `invite`.
+
+        '
+      properties:
+        user:
+          $ref: '#/components/schemas/BudgetUserRef'
+        invite:
+          $ref: '#/components/schemas/BudgetInviteRef'
+      oneOf:
+      - required:
+        - user
+      - required:
+        - invite
+    Budget:
+      type: object
+      required:
+      - id
+      - name
+      - budget_type
+      - available_amount
+      - spent_amount
+      - reset_amount
+      - reset_period
+      - current_period_start
+      - current_period_end
+      - has_member_limits
+      - rollover_funds
+      - limit_categories
+      - categories
+      - custom_fields
+      - is_deleted
+      - created
+      - updated
+      properties:
+        id:
+          type: string
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+          - BUDGET
+          - SUBSCRIPTION
+          example: BUDGET
+        available_amount:
+          type: number
+          description: The available amount of the budget.
+          example: 800
+        spent_amount:
+          type: number
+          description: The amount of the budget that has been spent.
+          example: 200
+        reset_amount:
+          type: number
+          description: The reset amount of the budget.
+          example: 1000
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        current_period_start:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The start date of the current period in UTC.
+          example: '2024-01-01T00:00:00Z'
+        current_period_end:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The end date of the current period in UTC.
+          example: '2024-01-31T23:59:59Z'
+        has_member_limits:
+          type: boolean
+          description: Whether the budget has member limits.
+          example: false
+        rollover_funds:
+          type: boolean
+          description: When true, unspent balance rolls over to the next period instead of resetting.
+          example: false
+        limit_categories:
+          type: boolean
+          description: 'When true, only categories listed in `categories` are visible on
+
+            the budget. When false, all enabled business categories are visible.
+
+            '
+          example: false
+        categories:
+          type: array
+          description: 'Categories currently visible on the budget. Returns an empty array
+
+            when `limit_categories` is false (no restriction in force).
+
+            '
+          items:
+            type: object
+            required:
+            - id
+            - name
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: 7f183748-c7fb-428a-9b2a-603a03dcabdb
+              name:
+                type: string
+                example: Travel
+        custom_fields:
+          type: array
+          description: Custom fields attached to this budget.
+          items:
+            type: object
+            required:
+            - id
+            - name
+            - allow_options
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: The id of the custom field.
+                example: 44b2add5-eeb2-456c-8918-9bb362b0e896
+              name:
+                type: string
+                example: Department
+              allow_options:
+                type:
+                - array
+                - 'null'
+                description: 'For LIST-type custom fields, the list-item ids selectable on
+
+                  this budget. `null` means no per-budget restriction (all
+
+                  enabled options are selectable). An empty array means no
+
+                  options are selectable on this budget. Always `null` for
+
+                  FREE_TEXT custom fields.
+
+                  '
+                items:
+                  type: string
+                  format: uuid
+        is_deleted:
+          type: boolean
+          description: Whether the budget is deleted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    BudgetUserRef:
+      type: object
+      description: Reference to an existing Weel user by id.
+      required:
+      - id
+      properties:
+        id:
+          type: integer
+          description: The id of the user.
+          example: 12345
+    BudgetCustomFieldInput:
+      type: object
+      description: 'A custom field to attach to the budget. `allow_options` restricts the
+
+        visible list items for LIST-type custom fields. Pass `[]` to detach
+
+        all options; omit the key to leave existing options unchanged.
+
+        `null` is not accepted.
+
+        '
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the custom field.
+          example: a2b1d8c0-9a4e-4b8a-bf24-90af44a98e2f
+        allow_options:
+          type: array
+          description: List item ids that should remain selectable on this budget.
+          items:
+            type: string
+            format: uuid
+    BudgetListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budgets that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budgets.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budgets.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget'
+    BudgetResetPeriod:
+      type: string
+      description: 'The reset cadence for the budget. JULY_FINANCIAL_YEAR resets on 1 July;
+
+        APRIL_FINANCIAL_YEAR resets on 1 April.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - FORTNIGHTLY
+      - MONTHLY
+      - QUARTERLY
+      - ANNUALLY
+      - JULY_FINANCIAL_YEAR
+      - APRIL_FINANCIAL_YEAR
+      - NEVER
+      example: MONTHLY
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

@@ -1,0 +1,310 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Categories API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Categories
+  description: 'This group of endpoints allow you to manage expense categories for your business.
+
+
+    Categories classify transactions. System-defined categories (`custom: false`) can only have their `enabled` state toggled. Custom categories (`custom: true`) can have their `name` updated and can be deleted.
+
+    '
+paths:
+  /v1/businesses/{client_id}/categories:
+    get:
+      operationId: listCategories
+      tags:
+      - Categories
+      summary: List categories
+      description: Returns a paginated list of expense categories for the given business.
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      - name: custom
+        in: query
+        required: false
+        description: Filter by category type. `true` returns only custom categories; `false` returns only system-defined categories. Omit to return all.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+    post:
+      operationId: createCategory
+      tags:
+      - Categories
+      summary: Create a category
+      description: 'Creates a new custom category (`custom: true`) for the business. The name must be unique within the business.'
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/categories/{category_id}:
+    patch:
+      operationId: updateCategory
+      tags:
+      - Categories
+      summary: Update a category
+      description: 'Updates an existing category. Accepted fields depend on the category type:
+
+
+        - Custom categories (`custom: true`): `name` and `accounting_code_id` are mutable; `enabled` returns 400.
+
+        - System categories (`custom: false`): `enabled` and `accounting_code_id` are mutable; `name` returns 400.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/CategoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+    delete:
+      operationId: deleteCategory
+      tags:
+      - Categories
+      summary: Delete a category
+      description: 'Soft-deletes a custom category. Returns `400` if the category is system-defined (`custom: false`).'
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/CategoryId'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request (system categories cannot be deleted)
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  parameters:
+    CategoryId:
+      name: category_id
+      in: path
+      description: The ID of the category.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 7cb19e45-1234-5678-abcd-ef9876543210
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  schemas:
+    CreateCategoryRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: The display name for the new custom category. Must be unique within the business.
+          example: Internal Events
+        accounting_code_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: The ID of a GL code to map to this category. Must belong to the same business. Omit to create without a mapping.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for this category.
+          example: 7cb19e45-1234-5678-abcd-ef9876543210
+        name:
+          type: string
+          description: The display name of the category.
+          example: Travel
+        custom:
+          type: boolean
+          description: 'Whether this is a custom category created by the business. System-defined categories have `custom: false`.'
+          example: false
+        enabled:
+          type: boolean
+          description: Whether this category is available for use on transactions.
+          example: true
+        accounting_code_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: The ID of the GL code mapped to this category, or `null` if no mapping exists.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        created:
+          type: string
+          format: date-time
+          description: When this category was created in UTC.
+          example: '2025-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: When this category was last updated in UTC.
+          example: '2025-01-01T00:00:00Z'
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: 'New display name. Only accepted for custom categories (`custom: true`). Returns 400 for system categories.'
+          example: Updated Category Name
+        enabled:
+          type: boolean
+          description: 'Whether this category is available for use. Only accepted for system categories (`custom: false`). Returns 400 for custom categories.'
+          example: false
+        accounting_code_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: The ID of a GL code to map to this category. Pass `null` to remove an existing mapping. Must belong to the same business.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    CategoryListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of categories.
+          example: 10
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories

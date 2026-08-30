@@ -1,0 +1,232 @@
+openapi: 3.2.0
+info:
+  title: Weel Open Tax Rates API
+  version: v1
+  termsOfService: https://letsweel.com/terms/
+  contact:
+    name: Contact our support
+    email: help@letsweel.com
+    url: https://help.letsweel.com
+  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
+
+    '
+servers:
+- url: https://public.letsweel.com
+security:
+- BearerAuth: []
+tags:
+- name: Tax Rates
+  description: 'This group of endpoints allows you to retrieve the tax rates configured for your business. Tax rates are read-only via the Public API.
+
+
+    For businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business Central), the tax rates synced from that integration are returned. Businesses without a connected integration get their own manually configured tax rates.
+
+    '
+paths:
+  /v1/businesses/{client_id}/tax-rates:
+    get:
+      operationId: listTaxRates
+      tags:
+      - Tax Rates
+      x-badges:
+      - name: Beta
+        color: orange
+      summary: List tax rates
+      description: 'Returns a paginated list of tax rates for the given business, ordered by name.
+
+
+        For businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business Central), returns the tax rates synced from that integration. Otherwise, returns the business''s own manually configured tax rates. Soft-deleted tax rates are excluded.
+
+
+        > **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, the endpoint returns an empty `results` array.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/PaginationOffset'
+      - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxRateListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      security:
+      - BearerAuth: []
+  /v1/businesses/{client_id}/tax-rates/{tax_rate_id}:
+    get:
+      operationId: getTaxRate
+      tags:
+      - Tax Rates
+      x-badges:
+      - name: Beta
+        color: orange
+      summary: Get tax rate
+      description: 'Returns a single tax rate for the given business. Returns `404` if the tax rate does not exist or does not belong to the business.
+
+
+        > **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, this endpoint returns `404`.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/ClientId'
+      - $ref: '#/components/parameters/TaxRateId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxRate'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+      - BearerAuth: []
+components:
+  parameters:
+    TaxRateId:
+      name: tax_rate_id
+      in: path
+      description: The ID of the tax rate.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: e33b7c61-5124-4ba0-b238-e4c573133715
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+  schemas:
+    TaxRate:
+      type:
+      - object
+      - 'null'
+      description: 'A tax rate applied to a line item. May be `null` when itemised tax rates are enabled for the business but a rate could not be resolved.
+
+        '
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the tax rate.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the tax rate.
+          example: GST
+        rate:
+          type: number
+          description: The tax rate as a decimal fraction.
+          example: 0.1
+        code:
+          type:
+          - string
+          - 'null'
+          description: The tax rate code.
+          example: GST
+        is_default_for:
+          type: string
+          description: Which transaction types the tax rate is the default for.
+          enum:
+          - DOMESTIC
+          - INTERNATIONAL
+          - BOTH
+          - NONE
+          example: DOMESTIC
+        is_enabled:
+          type: boolean
+          description: Whether the tax rate is enabled.
+          example: true
+        source:
+          type: string
+          description: The source of the tax rate.
+          enum:
+          - WEEL
+          - MANUAL
+          - ASP
+          example: WEEL
+    TaxRateListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of tax rates.
+          example: 10
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+x-tagGroups:
+- name: Users
+  tags:
+  - Invites
+  - Users
+  - Roles
+- name: Transactions
+  tags:
+  - Transactions
+- name: Budgets
+  tags:
+  - Budgets
+  - Budget Members
+  - Budget Owners
+  - Budget Topups
+- name: Statements
+  tags:
+  - Statements
+- name: Custom Fields
+  tags:
+  - Custom Fields
+  - Custom Field Options
+  - Custom Field Budgets
+- name: Chart of Accounts
+  tags:
+  - Accounting Codes
+  - Categories
