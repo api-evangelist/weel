@@ -530,6 +530,8 @@ apis:
   humanURL: https://developer.letsweel.com/openapi
   baseURL: https://public.letsweel.com
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
@@ -562,6 +564,8 @@ apis:
   humanURL: https://developer.letsweel.com/openapi
   baseURL: https://public.letsweel.com
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
