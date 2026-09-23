@@ -1,0 +1,27 @@
+# Front Door AI Index — weel — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: weel
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: letsweel.com
+  final_host: letsweel.com
+  ownership: own
+  owner: weel
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 9
+  host_score: 9
+  density: 3.72
+  words: 2417
+  tiers:
+    agentic: 0
+    core: 9
+    model: 0
+  ambiguous: 9
+  top_terms:
+    AI: 9
+    smart: 6
+    automation: 3

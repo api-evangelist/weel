@@ -7,9 +7,7 @@ info:
     name: Contact our support
     email: help@letsweel.com
     url: https://help.letsweel.com
-  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
-
-    '
+  description: The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
 servers:
 - url: https://public.letsweel.com
 security:
@@ -53,9 +51,7 @@ paths:
       description: 'Adds a new option to a `LIST` type custom field.
 
 
-        Not permitted for `FREE_TEXT` custom fields or custom fields created by accounting integrations.
-
-        '
+        Not permitted for `FREE_TEXT` custom fields or custom fields created by accounting integrations.'
       parameters:
       - $ref: '#/components/parameters/ClientId'
       - $ref: '#/components/parameters/CustomFieldId'
@@ -94,9 +90,7 @@ paths:
         **Accounting integration fields** (Xero, MYOB, QuickBooks, NetSuite, Business Central): only `enabled` can be changed. The `text` field cannot be modified.
 
 
-        **Non-accounting-integration fields** (MANUAL, PUBLIC_API): only `text` can be changed. The `enabled` field cannot be modified — delete and recreate options instead.
-
-        '
+        **Non-accounting-integration fields** (MANUAL, PUBLIC_API): only `text` can be changed. The `enabled` field cannot be modified — delete and recreate options instead.'
       parameters:
       - $ref: '#/components/parameters/ClientId'
       - $ref: '#/components/parameters/CustomFieldId'
@@ -132,9 +126,7 @@ paths:
       description: 'Permanently deletes a custom field option.
 
 
-        Not permitted for options belonging to custom fields created by accounting integrations.
-
-        '
+        Not permitted for options belonging to custom fields created by accounting integrations.'
       parameters:
       - $ref: '#/components/parameters/ClientId'
       - $ref: '#/components/parameters/CustomFieldId'
@@ -153,33 +145,51 @@ paths:
       security:
       - BearerAuth: []
 components:
+  parameters:
+    CustomFieldId:
+      name: custom_field_id
+      in: path
+      description: The ID of the custom field.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    CustomFieldOptionId:
+      name: option_id
+      in: path
+      description: The ID of the custom field option.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
   schemas:
-    CustomFieldOption:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The unique identifier for this option.
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        text:
-          type: string
-          description: The display text of this option.
-          example: Project Alpha
-        enabled:
-          type: boolean
-          description: Whether this option is available for selection.
-          example: true
-        created:
-          type: string
-          format: date-time
-          description: The date and time when this option was created.
-          example: '2024-01-15T09:00:00Z'
-        updated:
-          type: string
-          format: date-time
-          description: The date and time when this option was last updated.
-          example: '2024-01-15T09:00:00Z'
     UpdateCustomFieldOptionRequest:
       type: object
       properties:
@@ -214,6 +224,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomFieldOption'
+    CustomFieldOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for this option.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        text:
+          type: string
+          description: The display text of this option.
+          example: Project Alpha
+        enabled:
+          type: boolean
+          description: Whether this option is available for selection.
+          example: true
+        created:
+          type: string
+          format: date-time
+          description: The date and time when this option was created.
+          example: '2024-01-15T09:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when this option was last updated.
+          example: '2024-01-15T09:00:00Z'
     CreateCustomFieldOptionRequest:
       type: object
       required:
@@ -223,50 +259,6 @@ components:
           type: string
           description: The display text for this option.
           example: Project Alpha
-  parameters:
-    CustomFieldOptionId:
-      name: option_id
-      in: path
-      description: The ID of the custom field option.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    CustomFieldId:
-      name: custom_field_id
-      in: path
-      description: The ID of the custom field.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
   securitySchemes:
     BearerAuth:
       type: http

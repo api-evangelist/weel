@@ -7,9 +7,7 @@ info:
     name: Contact our support
     email: help@letsweel.com
     url: https://help.letsweel.com
-  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
-
-    '
+  description: The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
 servers:
 - url: https://public.letsweel.com
 security:
@@ -19,9 +17,7 @@ tags:
   description: 'This group of endpoints allows you to retrieve the tax rates configured for your business. Tax rates are read-only via the Public API.
 
 
-    For businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business Central), the tax rates synced from that integration are returned. Businesses without a connected integration get their own manually configured tax rates.
-
-    '
+    For businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business Central), the tax rates synced from that integration are returned. Businesses without a connected integration get their own manually configured tax rates.'
 paths:
   /v1/businesses/{client_id}/tax-rates:
     get:
@@ -38,9 +34,7 @@ paths:
         For businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business Central), returns the tax rates synced from that integration. Otherwise, returns the business''s own manually configured tax rates. Soft-deleted tax rates are excluded.
 
 
-        > **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, the endpoint returns an empty `results` array.
-
-        '
+        > **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, the endpoint returns an empty `results` array.'
       parameters:
       - $ref: '#/components/parameters/ClientId'
       - $ref: '#/components/parameters/PaginationOffset'
@@ -70,9 +64,7 @@ paths:
       description: 'Returns a single tax rate for the given business. Returns `404` if the tax rate does not exist or does not belong to the business.
 
 
-        > **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, this endpoint returns `404`.
-
-        '
+        > **Beta:** This endpoint is in beta and is being rolled out progressively. If tax rates are not yet enabled for your business, this endpoint returns `404`.'
       parameters:
       - $ref: '#/components/parameters/ClientId'
       - $ref: '#/components/parameters/TaxRateId'
@@ -110,14 +102,6 @@ components:
         type: integer
         default: 0
         example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
     PaginationLimit:
       name: limit
       in: query
@@ -127,7 +111,38 @@ components:
         default: 50
         maximum: 500
         example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   schemas:
+    TaxRateListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of tax rates.
+          example: 10
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
     TaxRate:
       type:
       - object
@@ -176,29 +191,6 @@ components:
           - MANUAL
           - ASP
           example: WEEL
-    TaxRateListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Total number of tax rates.
-          example: 10
-        next:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the next page.
-          example: limit=50&offset=50
-        previous:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the previous page.
-          example: null
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxRate'
   securitySchemes:
     BearerAuth:
       type: http

@@ -7,9 +7,7 @@ info:
     name: Contact our support
     email: help@letsweel.com
     url: https://help.letsweel.com
-  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
-
-    '
+  description: The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
 servers:
 - url: https://public.letsweel.com
 security:
@@ -24,9 +22,7 @@ paths:
       tags:
       - Transactions
       summary: List transactions
-      description: 'This endpoint allows you to retrieve a list of transactions for a given business. You can filter the transactions by date range, status, and expense completion status.
-
-        '
+      description: This endpoint allows you to retrieve a list of transactions for a given business. You can filter the transactions by date range, status, and expense completion status.
       parameters:
       - $ref: '#/components/parameters/PaginationOffset'
       - $ref: '#/components/parameters/PaginationLimit'
@@ -108,25 +104,6 @@ paths:
       - BearerAuth: []
 components:
   schemas:
-    TransactionListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of transactions that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of transactions.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of transactions.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Transaction'
     TransactionBudget:
       type: object
       properties:
@@ -145,6 +122,55 @@ components:
           - BUDGET
           - SUBSCRIPTION
           example: BUDGET
+    LineItemCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the category.
+          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
+        name:
+          type: string
+          description: The name of the category in Weel.
+          example: Accommodation
+        code:
+          type:
+          - string
+          - 'null'
+          description: The accounting code of the category, if any.
+          example: '6668'
+    LineItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the line item.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        amount:
+          type: number
+          description: The amount of the line item in AUD.
+          example: 100
+        gst_amount:
+          type: number
+          description: 'The GST amount of the line item. When a `tax_rate` is applied to the line item, this is derived from `tax_rate.rate`.
+
+            '
+          example: 9.09
+        tax_rate:
+          $ref: '#/components/schemas/TaxRate'
+          description: 'The tax rate applied to the line item. This property has three states: it is absent when itemised tax rates are not enabled for the business; it is a `TaxRate` object when a tax rate could be resolved for the line item; and it is `null` when itemised tax rates are enabled for the business but a tax rate could not be resolved for the line item.
+
+            '
+        category:
+          $ref: '#/components/schemas/LineItemCategory'
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+        description:
+          type: string
+          description: The description of the line item.
+          example: Building supplies
     TaxRate:
       type:
       - object
@@ -193,38 +219,6 @@ components:
           - MANUAL
           - ASP
           example: WEEL
-    LineItem:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the line item.
-          example: e33b7c61-5124-4ba0-b238-e4c573133715
-        amount:
-          type: number
-          description: The amount of the line item in AUD.
-          example: 100
-        gst_amount:
-          type: number
-          description: 'The GST amount of the line item. When a `tax_rate` is applied to the line item, this is derived from `tax_rate.rate`.
-
-            '
-          example: 9.09
-        tax_rate:
-          $ref: '#/components/schemas/TaxRate'
-          description: 'The tax rate applied to the line item. This property has three states: it is absent when itemised tax rates are not enabled for the business; it is a `TaxRate` object when a tax rate could be resolved for the line item; and it is `null` when itemised tax rates are enabled for the business but a tax rate could not be resolved for the line item.
-
-            '
-        category:
-          $ref: '#/components/schemas/LineItemCategory'
-        custom_fields:
-          type: array
-          items:
-            $ref: '#/components/schemas/CustomFieldValue'
-        description:
-          type: string
-          description: The description of the line item.
-          example: Building supplies
     CustomFieldValue:
       type: object
       properties:
@@ -341,6 +335,25 @@ components:
           format: date-time
           description: The date and time when the transaction was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
+    TransactionListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of transactions that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of transactions.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of transactions.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
     SubUser:
       type:
       - object
@@ -362,31 +375,7 @@ components:
           type: string
           description: The full name of the user or the display name if the user has set one.
           example: John Doe
-    LineItemCategory:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the category.
-          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
-        name:
-          type: string
-          description: The name of the category in Weel.
-          example: Accommodation
-        code:
-          type:
-          - string
-          - 'null'
-          description: The accounting code of the category, if any.
-          example: '6668'
   parameters:
-    TransactionId:
-      name: transaction_id
-      in: path
-      description: The ID of the transaction.
-      required: true
-      schema:
-        type: string
     PaginationOffset:
       name: offset
       in: query
@@ -395,14 +384,6 @@ components:
         type: integer
         default: 0
         example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
     PaginationLimit:
       name: limit
       in: query
@@ -412,6 +393,21 @@ components:
         default: 50
         maximum: 500
         example: 50
+    TransactionId:
+      name: transaction_id
+      in: path
+      description: The ID of the transaction.
+      required: true
+      schema:
+        type: string
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   securitySchemes:
     BearerAuth:
       type: http

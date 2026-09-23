@@ -1,0 +1,48 @@
+{
+  "provider": "weel",
+  "sources": [
+    "_original/weel-openapi.yml"
+  ],
+  "outputs": [
+    "weel-accounting-codes-api-openapi.yml",
+    "weel-budget-members-api-openapi.yml",
+    "weel-budget-owners-api-openapi.yml",
+    "weel-budget-topups-api-openapi.yml",
+    "weel-budgets-api-openapi.yml",
+    "weel-categories-api-openapi.yml",
+    "weel-custom-field-budgets-api-openapi.yml",
+    "weel-custom-field-options-api-openapi.yml",
+    "weel-custom-fields-api-openapi.yml",
+    "weel-invites-api-openapi.yml",
+    "weel-roles-api-openapi.yml",
+    "weel-statements-api-openapi.yml",
+    "weel-tax-rates-api-openapi.yml",
+    "weel-transactions-api-openapi.yml",
+    "weel-users-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "weel-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "weel-accounting-codes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-budget-members-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-budget-owners-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-budget-topups-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-budgets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-categories-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-custom-field-budgets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-custom-field-options-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-custom-fields-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-invites-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-roles-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-statements-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-tax-rates-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-transactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "weel-users-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

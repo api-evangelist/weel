@@ -7,21 +7,14 @@ info:
     name: Contact our support
     email: help@letsweel.com
     url: https://help.letsweel.com
-  description: 'The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
-
-    '
+  description: The Weel OpenAPI empowers businesses with seamless expense management and real-time insights. Our platform makes it easy to integrate and automate expense workflows, manage receipts, and keep track of spending across your organization.
 servers:
 - url: https://public.letsweel.com
 security:
 - BearerAuth: []
 tags:
 - name: Accounting Codes
-  description: 'This group of endpoints allows you to manage GL codes (accounting codes) for your business.
-
-
-    GL codes are used to classify expenses for bookkeeping export. Businesses with a connected accounting integration (Xero, MYOB, NetSuite, QuickBooks, Business Central) cannot create or delete GL codes via the API — those are managed by the integration sync. Businesses with a manual integration or no integration can freely create, update, and delete GL codes. A manual integration is automatically created on the first POST if none exists.
-
-    '
+  description: This group of endpoints allows you to manage GL codes (accounting codes) for your business.
 paths:
   /v1/businesses/{client_id}/accounting-codes:
     get:
@@ -62,9 +55,7 @@ paths:
         - Otherwise a new record is created.
 
 
-        Only available for businesses with a manual integration or no integration. If no integration exists, a manual integration is automatically created. Returns `400` if the business has a connected accounting provider (Xero, MYOB, NetSuite, QuickBooks, Business Central).
-
-        '
+        Only available for businesses with a manual integration or no integration. If no integration exists, a manual integration is automatically created. Returns `400` if the business has a connected accounting provider (Xero, MYOB, NetSuite, QuickBooks, Business Central).'
       parameters:
       - $ref: '#/components/parameters/ClientId'
       requestBody:
@@ -103,9 +94,7 @@ paths:
       description: 'Soft-deletes a GL code. Only available for businesses with a manual integration.
 
 
-        Any category mapped to this GL code will have its mapping cleared. Business admins and accountants will receive an `ACCOUNTING_CODE_DELETED` notification.
-
-        '
+        Any category mapped to this GL code will have its mapping cleared. Business admins and accountants will receive an `ACCOUNTING_CODE_DELETED` notification.'
       parameters:
       - $ref: '#/components/parameters/ClientId'
       - $ref: '#/components/parameters/AccountingCodeId'
@@ -123,6 +112,41 @@ paths:
       security:
       - BearerAuth: []
 components:
+  parameters:
+    AccountingCodeId:
+      name: accounting_code_id
+      in: path
+      description: The ID of the accounting code (GL code).
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   schemas:
     AccountingCodeListResponse:
       type: object
@@ -189,41 +213,6 @@ components:
           maxLength: 150
           description: The display name of the GL code.
           example: Office Expenses
-  parameters:
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
-    AccountingCodeId:
-      name: accounting_code_id
-      in: path
-      description: The ID of the accounting code (GL code).
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
   securitySchemes:
     BearerAuth:
       type: http
