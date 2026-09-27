@@ -206,6 +206,32 @@ components:
           - SOME
           - ALL_CURRENT_AND_NEW
           example: SOME
+    CreateCustomFieldRequest:
+      type: object
+      required:
+      - name
+      - field_type
+      properties:
+        name:
+          type: string
+          description: The display name for the custom field. Must be unique within the business.
+          example: Project Code
+        field_type:
+          type: string
+          description: The type of the custom field.
+          enum:
+          - LIST
+          - FREE_TEXT
+          example: LIST
+        budget_setting:
+          type: string
+          description: Controls which budgets this custom field is assigned to.
+          enum:
+          - NONE
+          - SOME
+          - ALL_CURRENT_AND_NEW
+          default: ALL_CURRENT_AND_NEW
+          example: NONE
     CustomField:
       type: object
       properties:
@@ -259,32 +285,6 @@ components:
           format: date-time
           description: The date and time when this custom field was last updated.
           example: '2024-01-15T09:00:00Z'
-    CreateCustomFieldRequest:
-      type: object
-      required:
-      - name
-      - field_type
-      properties:
-        name:
-          type: string
-          description: The display name for the custom field. Must be unique within the business.
-          example: Project Code
-        field_type:
-          type: string
-          description: The type of the custom field.
-          enum:
-          - LIST
-          - FREE_TEXT
-          example: LIST
-        budget_setting:
-          type: string
-          description: Controls which budgets this custom field is assigned to.
-          enum:
-          - NONE
-          - SOME
-          - ALL_CURRENT_AND_NEW
-          default: ALL_CURRENT_AND_NEW
-          example: NONE
   parameters:
     CustomFieldId:
       name: custom_field_id
@@ -295,14 +295,6 @@ components:
         type: string
         format: uuid
         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
     PaginationLimit:
       name: limit
       in: query
@@ -311,6 +303,14 @@ components:
         type: integer
         default: 50
         maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
         example: 50
     ClientId:
       name: client_id

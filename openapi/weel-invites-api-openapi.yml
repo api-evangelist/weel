@@ -94,32 +94,6 @@ paths:
       - BearerAuth: []
 components:
   schemas:
-    InviteCreateRequest:
-      type: object
-      required:
-      - email
-      - role_id
-      - payment_types
-      properties:
-        email:
-          type: string
-          format: email
-          description: The email address to send the invite to.
-          example: jane.doe@example.com
-        role_id:
-          type: string
-          format: uuid
-          description: The ID of the role to assign to the invitee. Must belong to the business.
-          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-        payment_types:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/PaymentType'
-          description: The payment types the invitee will have access to. Must be a non-empty list.
-          example:
-          - cards
-          - reimbursements
     Invite:
       type: object
       properties:
@@ -169,6 +143,32 @@ components:
       - bills
       - cards
       - reimbursements
+    InviteCreateRequest:
+      type: object
+      required:
+      - email
+      - role_id
+      - payment_types
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address to send the invite to.
+          example: jane.doe@example.com
+        role_id:
+          type: string
+          format: uuid
+          description: The ID of the role to assign to the invitee. Must belong to the business.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        payment_types:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          description: The payment types the invitee will have access to. Must be a non-empty list.
+          example:
+          - cards
+          - reimbursements
     InviteListResponse:
       type: object
       properties:
@@ -193,14 +193,13 @@ components:
           items:
             $ref: '#/components/schemas/Invite'
   parameters:
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
+    InviteId:
+      name: invite_id
+      in: path
+      description: The ID of the invite.
+      required: true
       schema:
         type: integer
-        default: 0
-        example: 50
     PaginationLimit:
       name: limit
       in: query
@@ -210,6 +209,14 @@ components:
         default: 50
         maximum: 500
         example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
     ClientId:
       name: client_id
       in: path
@@ -218,13 +225,6 @@ components:
       schema:
         type: integer
         example: 123
-    InviteId:
-      name: invite_id
-      in: path
-      description: The ID of the invite.
-      required: true
-      schema:
-        type: integer
   securitySchemes:
     BearerAuth:
       type: http

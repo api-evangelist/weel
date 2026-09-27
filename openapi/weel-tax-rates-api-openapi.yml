@@ -84,65 +84,7 @@ paths:
       security:
       - BearerAuth: []
 components:
-  parameters:
-    TaxRateId:
-      name: tax_rate_id
-      in: path
-      description: The ID of the tax rate.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: e33b7c61-5124-4ba0-b238-e4c573133715
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
   schemas:
-    TaxRateListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Total number of tax rates.
-          example: 10
-        next:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the next page.
-          example: limit=50&offset=50
-        previous:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the previous page.
-          example: null
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxRate'
     TaxRate:
       type:
       - object
@@ -191,6 +133,64 @@ components:
           - MANUAL
           - ASP
           example: WEEL
+    TaxRateListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of tax rates.
+          example: 10
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+  parameters:
+    TaxRateId:
+      name: tax_rate_id
+      in: path
+      description: The ID of the tax rate.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: e33b7c61-5124-4ba0-b238-e4c573133715
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   securitySchemes:
     BearerAuth:
       type: http

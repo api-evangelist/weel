@@ -145,85 +145,7 @@ paths:
       security:
       - BearerAuth: []
 components:
-  parameters:
-    CustomFieldId:
-      name: custom_field_id
-      in: path
-      description: The ID of the custom field.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
-    CustomFieldOptionId:
-      name: option_id
-      in: path
-      description: The ID of the custom field option.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
   schemas:
-    UpdateCustomFieldOptionRequest:
-      type: object
-      properties:
-        text:
-          type: string
-          description: The new display text. Only permitted for options belonging to non-accounting-integration custom fields.
-          example: Project Beta
-        enabled:
-          type: boolean
-          description: Enable or disable this option. Only permitted for options belonging to accounting integration custom fields (Xero, MYOB, QuickBooks, NetSuite, Business Central).
-          example: false
-    CustomFieldOptionListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Total number of options for this custom field (including disabled).
-          example: 5
-        next:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the next page.
-          example: limit=50&offset=50
-        previous:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the previous page.
-          example: null
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/CustomFieldOption'
     CustomFieldOption:
       type: object
       properties:
@@ -250,6 +172,29 @@ components:
           format: date-time
           description: The date and time when this option was last updated.
           example: '2024-01-15T09:00:00Z'
+    CustomFieldOptionListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of options for this custom field (including disabled).
+          example: 5
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldOption'
     CreateCustomFieldOptionRequest:
       type: object
       required:
@@ -259,6 +204,61 @@ components:
           type: string
           description: The display text for this option.
           example: Project Alpha
+    UpdateCustomFieldOptionRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The new display text. Only permitted for options belonging to non-accounting-integration custom fields.
+          example: Project Beta
+        enabled:
+          type: boolean
+          description: Enable or disable this option. Only permitted for options belonging to accounting integration custom fields (Xero, MYOB, QuickBooks, NetSuite, Business Central).
+          example: false
+  parameters:
+    CustomFieldOptionId:
+      name: option_id
+      in: path
+      description: The ID of the custom field option.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    CustomFieldId:
+      name: custom_field_id
+      in: path
+      description: The ID of the custom field.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   securitySchemes:
     BearerAuth:
       type: http

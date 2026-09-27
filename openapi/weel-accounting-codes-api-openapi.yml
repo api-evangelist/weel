@@ -112,65 +112,7 @@ paths:
       security:
       - BearerAuth: []
 components:
-  parameters:
-    AccountingCodeId:
-      name: accounting_code_id
-      in: path
-      description: The ID of the accounting code (GL code).
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
   schemas:
-    AccountingCodeListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: Total number of GL codes.
-          example: 100
-        next:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the next page.
-          example: limit=50&offset=50
-        previous:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the previous page.
-          example: null
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountingCode'
     AccountingCode:
       type: object
       properties:
@@ -213,6 +155,64 @@ components:
           maxLength: 150
           description: The display name of the GL code.
           example: Office Expenses
+    AccountingCodeListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of GL codes.
+          example: 100
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingCode'
+  parameters:
+    AccountingCodeId:
+      name: accounting_code_id
+      in: path
+      description: The ID of the accounting code (GL code).
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   securitySchemes:
     BearerAuth:
       type: http

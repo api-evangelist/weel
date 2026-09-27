@@ -149,70 +149,59 @@ paths:
       security:
       - BearerAuth: []
 components:
+  parameters:
+    UserId:
+      name: user_id
+      in: path
+      description: The ID of the user.
+      required: true
+      schema:
+        type: integer
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   schemas:
-    UserUpdate:
-      type: object
-      description: Fields that may be updated on an active employee. All optional.
-      properties:
-        role_id:
-          type: string
-          format: uuid
-          description: The role to assign to the user. Must belong to the same business.
-          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-        payment_types:
-          type: array
-          description: The payment types the user can transact with.
-          items:
-            $ref: '#/components/schemas/PaymentType'
-          example:
-          - cards
-        out_of_office_mode:
-          type: boolean
-          description: Whether the user is out of office. When true, both start and end dates are required.
-          example: true
-        out_of_office_start_date:
-          type: string
-          format: date
-          description: First day of the out-of-office period (inclusive).
-          example: '2026-06-01'
-        out_of_office_end_date:
-          type: string
-          format: date
-          description: Last day of the out-of-office period (inclusive). Must be on or after the start date.
-          example: '2026-06-15'
-        delegate_approver:
-          type:
-          - integer
-          - 'null'
-          description: The user ID to delegate approvals to while out of office. Must belong to the same business and have no overlapping out-of-office period.
-          example: 789
-        expense_delegate:
-          type: array
-          items:
-            type: integer
-          description: Replaces the user's full set of expense assistants with these user IDs. A user can have at most 3 expense assistants. Each ID must belong to the same business, must be a different user (a user cannot be their own expense assistant), and must not be repeated. Expense assistants cannot be chained. A user who is themselves an expense assistant cannot be given assistants, and a user who already has assistants cannot be assigned as one. Omit this field to leave the current assistants unchanged, or send an empty array to remove them all.
-          example:
-          - 456
-          - 789
-    UserListResponse:
+    UserBudgetMemberListResponse:
       type: object
       properties:
         count:
           type: integer
-          description: The total number of users that match the query.
+          description: The total number of budget members for the user.
           example: 100
         next:
           type: string
-          description: The URL to the next page of users.
+          description: The URL to the next page of budget members.
           example: offset=50&limit=50
         previous:
           type: string
-          description: The URL to the previous page of users.
+          description: The URL to the previous page of budget members.
           example: offset=0&limit=50
         results:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/UserBudgetMember'
     UserBudget:
       type: object
       properties:
@@ -231,6 +220,12 @@ components:
           - BUDGET
           - SUBSCRIPTION
           example: BUDGET
+    PaymentType:
+      type: string
+      enum:
+      - bills
+      - cards
+      - reimbursements
     User:
       type: object
       properties:
@@ -319,31 +314,69 @@ components:
           example:
           - 456
           - 789
-    UserBudgetMemberListResponse:
+    UserListResponse:
       type: object
       properties:
         count:
           type: integer
-          description: The total number of budget members for the user.
+          description: The total number of users that match the query.
           example: 100
         next:
           type: string
-          description: The URL to the next page of budget members.
+          description: The URL to the next page of users.
           example: offset=50&limit=50
         previous:
           type: string
-          description: The URL to the previous page of budget members.
+          description: The URL to the previous page of users.
           example: offset=0&limit=50
         results:
           type: array
           items:
-            $ref: '#/components/schemas/UserBudgetMember'
-    PaymentType:
-      type: string
-      enum:
-      - bills
-      - cards
-      - reimbursements
+            $ref: '#/components/schemas/User'
+    UserUpdate:
+      type: object
+      description: Fields that may be updated on an active employee. All optional.
+      properties:
+        role_id:
+          type: string
+          format: uuid
+          description: The role to assign to the user. Must belong to the same business.
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        payment_types:
+          type: array
+          description: The payment types the user can transact with.
+          items:
+            $ref: '#/components/schemas/PaymentType'
+          example:
+          - cards
+        out_of_office_mode:
+          type: boolean
+          description: Whether the user is out of office. When true, both start and end dates are required.
+          example: true
+        out_of_office_start_date:
+          type: string
+          format: date
+          description: First day of the out-of-office period (inclusive).
+          example: '2026-06-01'
+        out_of_office_end_date:
+          type: string
+          format: date
+          description: Last day of the out-of-office period (inclusive). Must be on or after the start date.
+          example: '2026-06-15'
+        delegate_approver:
+          type:
+          - integer
+          - 'null'
+          description: The user ID to delegate approvals to while out of office. Must belong to the same business and have no overlapping out-of-office period.
+          example: 789
+        expense_delegate:
+          type: array
+          items:
+            type: integer
+          description: Replaces the user's full set of expense assistants with these user IDs. A user can have at most 3 expense assistants. Each ID must belong to the same business, must be a different user (a user cannot be their own expense assistant), and must not be repeated. Expense assistants cannot be chained. A user who is themselves an expense assistant cannot be given assistants, and a user who already has assistants cannot be assigned as one. Omit this field to leave the current assistants unchanged, or send an empty array to remove them all.
+          example:
+          - 456
+          - 789
     UserBudgetMember:
       type: object
       properties:
@@ -380,39 +413,6 @@ components:
           format: date-time
           description: The date and time when the budget member was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
-  parameters:
-    UserId:
-      name: user_id
-      in: path
-      description: The ID of the user.
-      required: true
-      schema:
-        type: integer
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
   securitySchemes:
     BearerAuth:
       type: http

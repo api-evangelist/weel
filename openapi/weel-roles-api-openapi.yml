@@ -42,6 +42,25 @@ paths:
       - BearerAuth: []
 components:
   schemas:
+    Permission:
+      type: object
+      required:
+      - resource
+      - action
+      properties:
+        resource:
+          type: string
+          description: The resource the action applies to.
+          example: transactions
+        action:
+          type: string
+          description: The action permitted on the resource.
+          enum:
+          - create
+          - read
+          - update
+          - delete
+          example: read
     Role:
       type: object
       required:
@@ -86,34 +105,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Role'
-    Permission:
-      type: object
-      required:
-      - resource
-      - action
-      properties:
-        resource:
-          type: string
-          description: The resource the action applies to.
-          example: transactions
-        action:
-          type: string
-          description: The action permitted on the resource.
-          enum:
-          - create
-          - read
-          - update
-          - delete
-          example: read
   parameters:
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
     PaginationLimit:
       name: limit
       in: query
@@ -122,6 +114,14 @@ components:
         type: integer
         default: 50
         maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
         example: 50
     ClientId:
       name: client_id

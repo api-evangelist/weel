@@ -140,29 +140,23 @@ paths:
       - BearerAuth: []
 components:
   schemas:
-    CategoryListResponse:
+    CreateCategoryRequest:
       type: object
+      required:
+      - name
       properties:
-        count:
-          type: integer
-          description: Total number of categories.
-          example: 10
-        next:
+        name:
+          type: string
+          maxLength: 128
+          description: The display name for the new custom category. Must be unique within the business.
+          example: Internal Events
+        accounting_code_id:
           type:
           - string
           - 'null'
-          description: Pagination cursor for the next page.
-          example: limit=50&offset=50
-        previous:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the previous page.
-          example: null
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Category'
+          format: uuid
+          description: The ID of a GL code to map to this category. Must belong to the same business. Omit to create without a mapping.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     Category:
       type: object
       properties:
@@ -200,6 +194,29 @@ components:
           format: date-time
           description: When this category was last updated in UTC.
           example: '2025-01-01T00:00:00Z'
+    CategoryListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Total number of categories.
+          example: 10
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
     UpdateCategoryRequest:
       type: object
       properties:
@@ -219,40 +236,7 @@ components:
           format: uuid
           description: The ID of a GL code to map to this category. Pass `null` to remove an existing mapping. Must belong to the same business.
           example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    CreateCategoryRequest:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          maxLength: 128
-          description: The display name for the new custom category. Must be unique within the business.
-          example: Internal Events
-        accounting_code_id:
-          type:
-          - string
-          - 'null'
-          format: uuid
-          description: The ID of a GL code to map to this category. Must belong to the same business. Omit to create without a mapping.
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
   parameters:
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
     PaginationLimit:
       name: limit
       in: query
@@ -261,6 +245,14 @@ components:
         type: integer
         default: 50
         maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
         example: 50
     CategoryId:
       name: category_id
@@ -271,6 +263,14 @@ components:
         type: string
         format: uuid
         example: 7cb19e45-1234-5678-abcd-ef9876543210
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   securitySchemes:
     BearerAuth:
       type: http
