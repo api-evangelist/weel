@@ -104,44 +104,24 @@ paths:
       - BearerAuth: []
 components:
   schemas:
-    SubUser:
-      type:
-      - object
-      - 'null'
-      properties:
-        id:
-          type: integer
-          description: The ID of the user.
-          example: 123
-        first_name:
-          type: string
-          description: The first name of the user.
-          example: John
-        last_name:
-          type: string
-          description: The last name of the user.
-          example: Doe
-        name:
-          type: string
-          description: The full name of the user or the display name if the user has set one.
-          example: John Doe
-    LineItemCategory:
+    TransactionBudget:
       type: object
       properties:
         id:
           type: string
-          description: The ID of the category.
-          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
         name:
           type: string
-          description: The name of the category in Weel.
-          example: Accommodation
-        code:
-          type:
-          - string
-          - 'null'
-          description: The accounting code of the category, if any.
-          example: '6668'
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+          - BUDGET
+          - SUBSCRIPTION
+          example: BUDGET
     TaxRate:
       type:
       - object
@@ -190,6 +170,25 @@ components:
           - MANUAL
           - ASP
           example: WEEL
+    TransactionListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of transactions that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of transactions.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of transactions.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
     Transaction:
       type: object
       properties:
@@ -295,43 +294,38 @@ components:
           format: date-time
           description: The date and time when the transaction was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
-    TransactionListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of transactions that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of transactions.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of transactions.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Transaction'
-    TransactionBudget:
-      type: object
+    SubUser:
+      type:
+      - object
+      - 'null'
       properties:
         id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
           type: string
-          description: The ID of the budget.
-          example: e33b7c61-5124-4ba0-b238-e4c573133715
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
         name:
           type: string
-          description: The name of the budget.
-          example: Sales Team
-        budget_type:
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
+    CustomFieldValue:
+      type: object
+      properties:
+        field_name:
           type: string
-          description: The type of budget.
-          enum:
-          - BUDGET
-          - SUBSCRIPTION
-          example: BUDGET
+          description: The name of the custom field.
+          example: Project
+        entry_text:
+          type: string
+          description: The text value of the custom field.
+          example: Project 1
     LineItem:
       type: object
       properties:
@@ -364,18 +358,31 @@ components:
           type: string
           description: The description of the line item.
           example: Building supplies
-    CustomFieldValue:
+    LineItemCategory:
       type: object
       properties:
-        field_name:
+        id:
           type: string
-          description: The name of the custom field.
-          example: Project
-        entry_text:
+          description: The ID of the category.
+          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
+        name:
           type: string
-          description: The text value of the custom field.
-          example: Project 1
+          description: The name of the category in Weel.
+          example: Accommodation
+        code:
+          type:
+          - string
+          - 'null'
+          description: The accounting code of the category, if any.
+          example: '6668'
   parameters:
+    TransactionId:
+      name: transaction_id
+      in: path
+      description: The ID of the transaction.
+      required: true
+      schema:
+        type: string
     PaginationLimit:
       name: limit
       in: query
@@ -385,21 +392,6 @@ components:
         default: 50
         maximum: 500
         example: 50
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    TransactionId:
-      name: transaction_id
-      in: path
-      description: The ID of the transaction.
-      required: true
-      schema:
-        type: string
     ClientId:
       name: client_id
       in: path
@@ -408,6 +400,14 @@ components:
       schema:
         type: integer
         example: 123
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
   securitySchemes:
     BearerAuth:
       type: http

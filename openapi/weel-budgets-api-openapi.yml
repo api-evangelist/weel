@@ -184,6 +184,61 @@ paths:
       - BearerAuth: []
 components:
   schemas:
+    BudgetInviteRef:
+      type: object
+      description: Reference to an outstanding invite by id.
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the invite.
+          example: f4c1e25a-2a78-4f4f-9d3e-1c3a96cf21b1
+    BudgetListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budgets that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budgets.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budgets.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget'
+    BudgetCustomFieldInput:
+      type: object
+      description: 'A custom field to attach to the budget. `allow_options` restricts the
+
+        visible list items for LIST-type custom fields. Pass `[]` to detach
+
+        all options; omit the key to leave existing options unchanged.
+
+        `null` is not accepted.
+
+        '
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the custom field.
+          example: a2b1d8c0-9a4e-4b8a-bf24-90af44a98e2f
+        allow_options:
+          type: array
+          description: List item ids that should remain selectable on this budget.
+          items:
+            type: string
+            format: uuid
     BudgetResetPeriod:
       type: string
       description: 'The reset cadence for the budget. JULY_FINANCIAL_YEAR resets on 1 July;
@@ -202,6 +257,33 @@ components:
       - APRIL_FINANCIAL_YEAR
       - NEVER
       example: MONTHLY
+    BudgetUserRef:
+      type: object
+      description: Reference to an existing Weel user by id.
+      required:
+      - id
+      properties:
+        id:
+          type: integer
+          description: The id of the user.
+          example: 12345
+    BudgetOwnerInput:
+      type: object
+      description: 'An owner (budget approver) to attach to the budget. Provide exactly
+
+        one of `user` or `invite`.
+
+        '
+      properties:
+        user:
+          $ref: '#/components/schemas/BudgetUserRef'
+        invite:
+          $ref: '#/components/schemas/BudgetInviteRef'
+      oneOf:
+      - required:
+        - user
+      - required:
+        - invite
     BudgetUpdateRequest:
       type: object
       description: 'Partial update of a budget''s configuration. To change members or
@@ -236,6 +318,71 @@ components:
           example: true
         categories:
           type: array
+          items:
+            type: string
+            format: uuid
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCustomFieldInput'
+    BudgetCreateRequest:
+      type: object
+      required:
+      - name
+      - reset_amount
+      - reset_period
+      - has_member_limits
+      - rollover_funds
+      - members
+      - owners
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: The name of the budget.
+          example: Sales Team
+        reset_amount:
+          type: number
+          description: The amount the budget resets to each period.
+          example: 1000
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        has_member_limits:
+          type: boolean
+          description: 'When true, each member has its own `reset_amount` cap and the sum
+
+            of member caps must equal the budget `reset_amount`. When false,
+
+            members share the budget''s pot.
+
+            '
+          example: false
+        rollover_funds:
+          type: boolean
+          description: When true, unspent balance rolls over to the next period.
+          example: false
+        members:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/BudgetMemberInput'
+        owners:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/BudgetOwnerInput'
+        limit_categories:
+          type: boolean
+          description: 'When true, only the categories listed in `categories` are visible
+
+            on the budget. When false, all business categories are visible.
+
+            '
+          default: false
+          example: false
+        categories:
+          type: array
+          description: Category ids that should be visible on the budget.
           items:
             type: string
             format: uuid
@@ -393,128 +540,6 @@ components:
           format: date-time
           description: The date and time when the budget was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
-    BudgetListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of budgets that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of budgets.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of budgets.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Budget'
-    BudgetCreateRequest:
-      type: object
-      required:
-      - name
-      - reset_amount
-      - reset_period
-      - has_member_limits
-      - rollover_funds
-      - members
-      - owners
-      properties:
-        name:
-          type: string
-          maxLength: 128
-          description: The name of the budget.
-          example: Sales Team
-        reset_amount:
-          type: number
-          description: The amount the budget resets to each period.
-          example: 1000
-        reset_period:
-          $ref: '#/components/schemas/BudgetResetPeriod'
-        has_member_limits:
-          type: boolean
-          description: 'When true, each member has its own `reset_amount` cap and the sum
-
-            of member caps must equal the budget `reset_amount`. When false,
-
-            members share the budget''s pot.
-
-            '
-          example: false
-        rollover_funds:
-          type: boolean
-          description: When true, unspent balance rolls over to the next period.
-          example: false
-        members:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/BudgetMemberInput'
-        owners:
-          type: array
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/BudgetOwnerInput'
-        limit_categories:
-          type: boolean
-          description: 'When true, only the categories listed in `categories` are visible
-
-            on the budget. When false, all business categories are visible.
-
-            '
-          default: false
-          example: false
-        categories:
-          type: array
-          description: Category ids that should be visible on the budget.
-          items:
-            type: string
-            format: uuid
-        custom_fields:
-          type: array
-          items:
-            $ref: '#/components/schemas/BudgetCustomFieldInput'
-    BudgetInviteRef:
-      type: object
-      description: Reference to an outstanding invite by id.
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The id of the invite.
-          example: f4c1e25a-2a78-4f4f-9d3e-1c3a96cf21b1
-    BudgetUserRef:
-      type: object
-      description: Reference to an existing Weel user by id.
-      required:
-      - id
-      properties:
-        id:
-          type: integer
-          description: The id of the user.
-          example: 12345
-    BudgetOwnerInput:
-      type: object
-      description: 'An owner (budget approver) to attach to the budget. Provide exactly
-
-        one of `user` or `invite`.
-
-        '
-      properties:
-        user:
-          $ref: '#/components/schemas/BudgetUserRef'
-        invite:
-          $ref: '#/components/schemas/BudgetInviteRef'
-      oneOf:
-      - required:
-        - user
-      - required:
-        - invite
     BudgetMemberInput:
       type: object
       description: 'A member to attach to the budget. Provide exactly one of `user` or
@@ -540,40 +565,21 @@ components:
         - user
       - required:
         - invite
-    BudgetCustomFieldInput:
-      type: object
-      description: 'A custom field to attach to the budget. `allow_options` restricts the
-
-        visible list items for LIST-type custom fields. Pass `[]` to detach
-
-        all options; omit the key to leave existing options unchanged.
-
-        `null` is not accepted.
-
-        '
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The id of the custom field.
-          example: a2b1d8c0-9a4e-4b8a-bf24-90af44a98e2f
-        allow_options:
-          type: array
-          description: List item ids that should remain selectable on this budget.
-          items:
-            type: string
-            format: uuid
   parameters:
-    PaginationOffset:
-      name: offset
+    IsDeleted:
+      name: is_deleted
       in: query
-      description: Offset to retrieve items from.
+      description: Whether the resource is deleted.
       schema:
-        type: integer
-        default: 0
-        example: 50
+        type: boolean
+        example: false
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
     PaginationLimit:
       name: limit
       in: query
@@ -583,13 +589,6 @@ components:
         default: 50
         maximum: 500
         example: 50
-    IsDeleted:
-      name: is_deleted
-      in: query
-      description: Whether the resource is deleted.
-      schema:
-        type: boolean
-        example: false
     ClientId:
       name: client_id
       in: path
@@ -598,13 +597,14 @@ components:
       schema:
         type: integer
         example: 123
-    BudgetId:
-      name: budget_id
-      in: path
-      description: The ID of the budget.
-      required: true
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
       schema:
-        type: string
+        type: integer
+        default: 0
+        example: 50
   securitySchemes:
     BearerAuth:
       type: http

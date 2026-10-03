@@ -139,22 +139,6 @@ components:
           format: date-time
           description: When this GL code was last updated in UTC.
           example: '2026-01-15T10:30:00Z'
-    CreateAccountingCodeRequest:
-      type: object
-      required:
-      - code
-      - name
-      properties:
-        code:
-          type: string
-          maxLength: 128
-          description: The GL code string. Used as the upsert key — if a code with this value already exists it will be updated.
-          example: '4000'
-        name:
-          type: string
-          maxLength: 150
-          description: The display name of the GL code.
-          example: Office Expenses
     AccountingCodeListResponse:
       type: object
       properties:
@@ -178,16 +162,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccountingCode'
+    CreateAccountingCodeRequest:
+      type: object
+      required:
+      - code
+      - name
+      properties:
+        code:
+          type: string
+          maxLength: 128
+          description: The GL code string. Used as the upsert key — if a code with this value already exists it will be updated.
+          example: '4000'
+        name:
+          type: string
+          maxLength: 150
+          description: The display name of the GL code.
+          example: Office Expenses
   parameters:
-    AccountingCodeId:
-      name: accounting_code_id
-      in: path
-      description: The ID of the accounting code (GL code).
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     PaginationLimit:
       name: limit
       in: query
@@ -197,14 +188,15 @@ components:
         default: 50
         maximum: 500
         example: 50
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
+    AccountingCodeId:
+      name: accounting_code_id
+      in: path
+      description: The ID of the accounting code (GL code).
+      required: true
       schema:
-        type: integer
-        default: 0
-        example: 50
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     ClientId:
       name: client_id
       in: path
@@ -213,6 +205,14 @@ components:
       schema:
         type: integer
         example: 123
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
   securitySchemes:
     BearerAuth:
       type: http

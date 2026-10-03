@@ -149,40 +149,68 @@ paths:
       security:
       - BearerAuth: []
 components:
-  parameters:
-    UserId:
-      name: user_id
-      in: path
-      description: The ID of the user.
-      required: true
-      schema:
-        type: integer
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
   schemas:
+    PaymentType:
+      type: string
+      enum:
+      - bills
+      - cards
+      - reimbursements
+    UserBudgetMember:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget member.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        budget:
+          description: The budget for the budget member.
+          $ref: '#/components/schemas/UserBudget'
+        available_amount:
+          type: number
+          description: The available amount of the budget member.
+          example: 800
+        spent_amount:
+          type: number
+          description: The amount of the budget that has been spent by the budget member.
+          example: 200
+        reset_amount:
+          type: number
+          description: The reset amount of the budget member.
+          example: 1000
+        is_deleted:
+          type: boolean
+          description: Whether the budget member is deleted.
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the budget member was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
+    UserListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of users that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of users.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of users.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
     UserBudgetMemberListResponse:
       type: object
       properties:
@@ -202,30 +230,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserBudgetMember'
-    UserBudget:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the budget.
-          example: e33b7c61-5124-4ba0-b238-e4c573133715
-        name:
-          type: string
-          description: The name of the budget.
-          example: Sales Team
-        budget_type:
-          type: string
-          description: The type of budget.
-          enum:
-          - BUDGET
-          - SUBSCRIPTION
-          example: BUDGET
-    PaymentType:
-      type: string
-      enum:
-      - bills
-      - cards
-      - reimbursements
     User:
       type: object
       properties:
@@ -314,25 +318,24 @@ components:
           example:
           - 456
           - 789
-    UserListResponse:
+    UserBudget:
       type: object
       properties:
-        count:
-          type: integer
-          description: The total number of users that match the query.
-          example: 100
-        next:
+        id:
           type: string
-          description: The URL to the next page of users.
-          example: offset=50&limit=50
-        previous:
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
           type: string
-          description: The URL to the previous page of users.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+          - BUDGET
+          - SUBSCRIPTION
+          example: BUDGET
     UserUpdate:
       type: object
       description: Fields that may be updated on an active employee. All optional.
@@ -377,42 +380,39 @@ components:
           example:
           - 456
           - 789
-    UserBudgetMember:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the budget member.
-          example: e33b7c61-5124-4ba0-b238-e4c573133715
-        budget:
-          description: The budget for the budget member.
-          $ref: '#/components/schemas/UserBudget'
-        available_amount:
-          type: number
-          description: The available amount of the budget member.
-          example: 800
-        spent_amount:
-          type: number
-          description: The amount of the budget that has been spent by the budget member.
-          example: 200
-        reset_amount:
-          type: number
-          description: The reset amount of the budget member.
-          example: 1000
-        is_deleted:
-          type: boolean
-          description: Whether the budget member is deleted.
-          example: false
-        created:
-          type: string
-          format: date-time
-          description: The date and time when the budget member was created in UTC.
-          example: '2024-01-01T00:00:00Z'
-        updated:
-          type: string
-          format: date-time
-          description: The date and time when the budget member was last updated in UTC.
-          example: '2024-01-01T00:00:00Z'
+  parameters:
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    UserId:
+      name: user_id
+      in: path
+      description: The ID of the user.
+      required: true
+      schema:
+        type: integer
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
   securitySchemes:
     BearerAuth:
       type: http

@@ -156,6 +156,41 @@ paths:
       security:
       - BearerAuth: []
 components:
+  parameters:
+    CustomFieldId:
+      name: custom_field_id
+      in: path
+      description: The ID of the custom field.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
   schemas:
     CustomFieldListResponse:
       type: object
@@ -180,58 +215,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomField'
-    UpdateCustomFieldRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The new display name. Not permitted for fields created by accounting integrations. Cannot set to a name already in use by another custom field in the business.
-          example: Cost Centre
-        field_type:
-          type: string
-          description: The type of the custom field. Not permitted for fields created by accounting integrations.
-          enum:
-          - LIST
-          - FREE_TEXT
-          example: LIST
-        is_manager_only:
-          type: boolean
-          description: Cannot be changed after creation — always returns 400 if a different value is sent.
-          example: false
-        budget_setting:
-          type: string
-          description: Controls which budgets this custom field is assigned to.
-          enum:
-          - NONE
-          - SOME
-          - ALL_CURRENT_AND_NEW
-          example: SOME
-    CreateCustomFieldRequest:
-      type: object
-      required:
-      - name
-      - field_type
-      properties:
-        name:
-          type: string
-          description: The display name for the custom field. Must be unique within the business.
-          example: Project Code
-        field_type:
-          type: string
-          description: The type of the custom field.
-          enum:
-          - LIST
-          - FREE_TEXT
-          example: LIST
-        budget_setting:
-          type: string
-          description: Controls which budgets this custom field is assigned to.
-          enum:
-          - NONE
-          - SOME
-          - ALL_CURRENT_AND_NEW
-          default: ALL_CURRENT_AND_NEW
-          example: NONE
     CustomField:
       type: object
       properties:
@@ -285,41 +268,58 @@ components:
           format: date-time
           description: The date and time when this custom field was last updated.
           example: '2024-01-15T09:00:00Z'
-  parameters:
-    CustomFieldId:
-      name: custom_field_id
-      in: path
-      description: The ID of the custom field.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
+    UpdateCustomFieldRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The new display name. Not permitted for fields created by accounting integrations. Cannot set to a name already in use by another custom field in the business.
+          example: Cost Centre
+        field_type:
+          type: string
+          description: The type of the custom field. Not permitted for fields created by accounting integrations.
+          enum:
+          - LIST
+          - FREE_TEXT
+          example: LIST
+        is_manager_only:
+          type: boolean
+          description: Cannot be changed after creation — always returns 400 if a different value is sent.
+          example: false
+        budget_setting:
+          type: string
+          description: Controls which budgets this custom field is assigned to.
+          enum:
+          - NONE
+          - SOME
+          - ALL_CURRENT_AND_NEW
+          example: SOME
+    CreateCustomFieldRequest:
+      type: object
+      required:
+      - name
+      - field_type
+      properties:
+        name:
+          type: string
+          description: The display name for the custom field. Must be unique within the business.
+          example: Project Code
+        field_type:
+          type: string
+          description: The type of the custom field.
+          enum:
+          - LIST
+          - FREE_TEXT
+          example: LIST
+        budget_setting:
+          type: string
+          description: Controls which budgets this custom field is assigned to.
+          enum:
+          - NONE
+          - SOME
+          - ALL_CURRENT_AND_NEW
+          default: ALL_CURRENT_AND_NEW
+          example: NONE
   securitySchemes:
     BearerAuth:
       type: http
