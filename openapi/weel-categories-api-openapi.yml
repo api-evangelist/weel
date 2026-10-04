@@ -139,6 +139,41 @@ paths:
       security:
       - BearerAuth: []
 components:
+  parameters:
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    CategoryId:
+      name: category_id
+      in: path
+      description: The ID of the category.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 7cb19e45-1234-5678-abcd-ef9876543210
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
   schemas:
     Category:
       type: object
@@ -196,23 +231,6 @@ components:
           format: uuid
           description: The ID of a GL code to map to this category. Pass `null` to remove an existing mapping. Must belong to the same business.
           example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-    CreateCategoryRequest:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          maxLength: 128
-          description: The display name for the new custom category. Must be unique within the business.
-          example: Internal Events
-        accounting_code_id:
-          type:
-          - string
-          - 'null'
-          format: uuid
-          description: The ID of a GL code to map to this category. Must belong to the same business. Omit to create without a mapping.
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     CategoryListResponse:
       type: object
       properties:
@@ -236,41 +254,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Category'
-  parameters:
-    CategoryId:
-      name: category_id
-      in: path
-      description: The ID of the category.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 7cb19e45-1234-5678-abcd-ef9876543210
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
+    CreateCategoryRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          description: The display name for the new custom category. Must be unique within the business.
+          example: Internal Events
+        accounting_code_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: The ID of a GL code to map to this category. Must belong to the same business. Omit to create without a mapping.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
   securitySchemes:
     BearerAuth:
       type: http

@@ -199,97 +199,6 @@ paths:
       - BearerAuth: []
 components:
   schemas:
-    PaymentType:
-      type: string
-      enum:
-      - bills
-      - cards
-      - reimbursements
-    CreateBudgetMemberRequest:
-      type: object
-      description: 'Provide exactly one of `user` or `invite`. `reset_amount` is required
-
-        when the budget has `has_member_limits=true` and must be omitted
-
-        otherwise.
-
-        '
-      properties:
-        user:
-          type: object
-          description: An accepted user in this business.
-          properties:
-            id:
-              type: integer
-              description: The user's ID.
-              example: 123
-          required:
-          - id
-        invite:
-          type: object
-          description: A pending invite in this business.
-          properties:
-            id:
-              type: string
-              description: The invite's ID.
-              example: e33b7c61-5124-4ba0-b238-e4c573133715
-          required:
-          - id
-        reset_amount:
-          type: number
-          description: 'The member''s spending limit. Required when the budget has
-
-            `has_member_limits=true`. Must be omitted when `has_member_limits=false`
-
-            (the member inherits the budget''s `reset_amount`).
-
-            '
-          example: 500
-      oneOf:
-      - required:
-        - user
-      - required:
-        - invite
-    BudgetMemberListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of budget members that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of budget members.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of budget members.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/BudgetMember'
-    SubUser:
-      type:
-      - object
-      - 'null'
-      properties:
-        id:
-          type: integer
-          description: The ID of the user.
-          example: 123
-        first_name:
-          type: string
-          description: The first name of the user.
-          example: John
-        last_name:
-          type: string
-          description: The last name of the user.
-          example: Doe
-        name:
-          type: string
-          description: The full name of the user or the display name if the user has set one.
-          example: John Doe
     Invite:
       type: object
       properties:
@@ -372,6 +281,72 @@ components:
           format: date-time
           description: The date and time when the budget member was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
+    CreateBudgetMemberRequest:
+      type: object
+      description: 'Provide exactly one of `user` or `invite`. `reset_amount` is required
+
+        when the budget has `has_member_limits=true` and must be omitted
+
+        otherwise.
+
+        '
+      properties:
+        user:
+          type: object
+          description: An accepted user in this business.
+          properties:
+            id:
+              type: integer
+              description: The user's ID.
+              example: 123
+          required:
+          - id
+        invite:
+          type: object
+          description: A pending invite in this business.
+          properties:
+            id:
+              type: string
+              description: The invite's ID.
+              example: e33b7c61-5124-4ba0-b238-e4c573133715
+          required:
+          - id
+        reset_amount:
+          type: number
+          description: 'The member''s spending limit. Required when the budget has
+
+            `has_member_limits=true`. Must be omitted when `has_member_limits=false`
+
+            (the member inherits the budget''s `reset_amount`).
+
+            '
+          example: 500
+      oneOf:
+      - required:
+        - user
+      - required:
+        - invite
+    SubUser:
+      type:
+      - object
+      - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
     UpdateBudgetMemberRequest:
       type: object
       description: 'Updates the member''s `reset_amount`. Only valid when the budget has
@@ -386,6 +361,31 @@ components:
           example: 750
       required:
       - reset_amount
+    PaymentType:
+      type: string
+      enum:
+      - bills
+      - cards
+      - reimbursements
+    BudgetMemberListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budget members that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budget members.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budget members.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetMember'
   parameters:
     IsDeleted:
       name: is_deleted
@@ -394,20 +394,6 @@ components:
       schema:
         type: boolean
         example: false
-    BudgetId:
-      name: budget_id
-      in: path
-      description: The ID of the budget.
-      required: true
-      schema:
-        type: string
-    BudgetMemberId:
-      name: budget_member_id
-      in: path
-      description: The ID of the budget member.
-      required: true
-      schema:
-        type: integer
     PaginationLimit:
       name: limit
       in: query
@@ -417,6 +403,20 @@ components:
         default: 50
         maximum: 500
         example: 50
+    BudgetMemberId:
+      name: budget_member_id
+      in: path
+      description: The ID of the budget member.
+      required: true
+      schema:
+        type: integer
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
     ClientId:
       name: client_id
       in: path

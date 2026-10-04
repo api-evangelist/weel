@@ -195,136 +195,6 @@ components:
           format: uuid
           description: The id of the invite.
           example: f4c1e25a-2a78-4f4f-9d3e-1c3a96cf21b1
-    BudgetListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of budgets that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of budgets.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of budgets.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Budget'
-    BudgetCustomFieldInput:
-      type: object
-      description: 'A custom field to attach to the budget. `allow_options` restricts the
-
-        visible list items for LIST-type custom fields. Pass `[]` to detach
-
-        all options; omit the key to leave existing options unchanged.
-
-        `null` is not accepted.
-
-        '
-      required:
-      - id
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The id of the custom field.
-          example: a2b1d8c0-9a4e-4b8a-bf24-90af44a98e2f
-        allow_options:
-          type: array
-          description: List item ids that should remain selectable on this budget.
-          items:
-            type: string
-            format: uuid
-    BudgetResetPeriod:
-      type: string
-      description: 'The reset cadence for the budget. JULY_FINANCIAL_YEAR resets on 1 July;
-
-        APRIL_FINANCIAL_YEAR resets on 1 April.
-
-        '
-      enum:
-      - DAILY
-      - WEEKLY
-      - FORTNIGHTLY
-      - MONTHLY
-      - QUARTERLY
-      - ANNUALLY
-      - JULY_FINANCIAL_YEAR
-      - APRIL_FINANCIAL_YEAR
-      - NEVER
-      example: MONTHLY
-    BudgetUserRef:
-      type: object
-      description: Reference to an existing Weel user by id.
-      required:
-      - id
-      properties:
-        id:
-          type: integer
-          description: The id of the user.
-          example: 12345
-    BudgetOwnerInput:
-      type: object
-      description: 'An owner (budget approver) to attach to the budget. Provide exactly
-
-        one of `user` or `invite`.
-
-        '
-      properties:
-        user:
-          $ref: '#/components/schemas/BudgetUserRef'
-        invite:
-          $ref: '#/components/schemas/BudgetInviteRef'
-      oneOf:
-      - required:
-        - user
-      - required:
-        - invite
-    BudgetUpdateRequest:
-      type: object
-      description: 'Partial update of a budget''s configuration. To change members or
-
-        owners, use their respective endpoints —
-
-        [budget members](#tag/Budget-Members) and
-
-        [budget owners](#tag/Budget-Owners). Toggling `has_member_limits`
-
-        cascades onto existing members (equal split on false→true).
-
-        '
-      properties:
-        name:
-          type: string
-          maxLength: 128
-          example: Sales Team
-        reset_amount:
-          type: number
-          example: 1500
-        reset_period:
-          $ref: '#/components/schemas/BudgetResetPeriod'
-        has_member_limits:
-          type: boolean
-          example: true
-        rollover_funds:
-          type: boolean
-          example: true
-        limit_categories:
-          type: boolean
-          example: true
-        categories:
-          type: array
-          items:
-            type: string
-            format: uuid
-        custom_fields:
-          type: array
-          items:
-            $ref: '#/components/schemas/BudgetCustomFieldInput'
     BudgetCreateRequest:
       type: object
       required:
@@ -390,6 +260,31 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BudgetCustomFieldInput'
+    BudgetMemberInput:
+      type: object
+      description: 'A member to attach to the budget. Provide exactly one of `user` or
+
+        `invite`. `reset_amount` is required when `has_member_limits` is true
+
+        and must be omitted otherwise; the sum of member `reset_amount` values
+
+        must equal the budget''s `reset_amount`.
+
+        '
+      properties:
+        user:
+          $ref: '#/components/schemas/BudgetUserRef'
+        invite:
+          $ref: '#/components/schemas/BudgetInviteRef'
+        reset_amount:
+          type: number
+          description: The per-member spending cap when has_member_limits is true.
+          example: 250
+      oneOf:
+      - required:
+        - user
+      - required:
+        - invite
     Budget:
       type: object
       required:
@@ -540,15 +435,30 @@ components:
           format: date-time
           description: The date and time when the budget was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
-    BudgetMemberInput:
+    BudgetListResponse:
       type: object
-      description: 'A member to attach to the budget. Provide exactly one of `user` or
+      properties:
+        count:
+          type: integer
+          description: The total number of budgets that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budgets.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budgets.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Budget'
+    BudgetOwnerInput:
+      type: object
+      description: 'An owner (budget approver) to attach to the budget. Provide exactly
 
-        `invite`. `reset_amount` is required when `has_member_limits` is true
-
-        and must be omitted otherwise; the sum of member `reset_amount` values
-
-        must equal the budget''s `reset_amount`.
+        one of `user` or `invite`.
 
         '
       properties:
@@ -556,15 +466,105 @@ components:
           $ref: '#/components/schemas/BudgetUserRef'
         invite:
           $ref: '#/components/schemas/BudgetInviteRef'
-        reset_amount:
-          type: number
-          description: The per-member spending cap when has_member_limits is true.
-          example: 250
       oneOf:
       - required:
         - user
       - required:
         - invite
+    BudgetCustomFieldInput:
+      type: object
+      description: 'A custom field to attach to the budget. `allow_options` restricts the
+
+        visible list items for LIST-type custom fields. Pass `[]` to detach
+
+        all options; omit the key to leave existing options unchanged.
+
+        `null` is not accepted.
+
+        '
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the custom field.
+          example: a2b1d8c0-9a4e-4b8a-bf24-90af44a98e2f
+        allow_options:
+          type: array
+          description: List item ids that should remain selectable on this budget.
+          items:
+            type: string
+            format: uuid
+    BudgetUserRef:
+      type: object
+      description: Reference to an existing Weel user by id.
+      required:
+      - id
+      properties:
+        id:
+          type: integer
+          description: The id of the user.
+          example: 12345
+    BudgetResetPeriod:
+      type: string
+      description: 'The reset cadence for the budget. JULY_FINANCIAL_YEAR resets on 1 July;
+
+        APRIL_FINANCIAL_YEAR resets on 1 April.
+
+        '
+      enum:
+      - DAILY
+      - WEEKLY
+      - FORTNIGHTLY
+      - MONTHLY
+      - QUARTERLY
+      - ANNUALLY
+      - JULY_FINANCIAL_YEAR
+      - APRIL_FINANCIAL_YEAR
+      - NEVER
+      example: MONTHLY
+    BudgetUpdateRequest:
+      type: object
+      description: 'Partial update of a budget''s configuration. To change members or
+
+        owners, use their respective endpoints —
+
+        [budget members](#tag/Budget-Members) and
+
+        [budget owners](#tag/Budget-Owners). Toggling `has_member_limits`
+
+        cascades onto existing members (equal split on false→true).
+
+        '
+      properties:
+        name:
+          type: string
+          maxLength: 128
+          example: Sales Team
+        reset_amount:
+          type: number
+          example: 1500
+        reset_period:
+          $ref: '#/components/schemas/BudgetResetPeriod'
+        has_member_limits:
+          type: boolean
+          example: true
+        rollover_funds:
+          type: boolean
+          example: true
+        limit_categories:
+          type: boolean
+          example: true
+        categories:
+          type: array
+          items:
+            type: string
+            format: uuid
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCustomFieldInput'
   parameters:
     IsDeleted:
       name: is_deleted
@@ -573,13 +573,6 @@ components:
       schema:
         type: boolean
         example: false
-    BudgetId:
-      name: budget_id
-      in: path
-      description: The ID of the budget.
-      required: true
-      schema:
-        type: string
     PaginationLimit:
       name: limit
       in: query
@@ -589,6 +582,13 @@ components:
         default: 50
         maximum: 500
         example: 50
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
     ClientId:
       name: client_id
       in: path

@@ -146,15 +146,6 @@ paths:
       - BearerAuth: []
 components:
   parameters:
-    CustomFieldId:
-      name: custom_field_id
-      in: path
-      description: The ID of the custom field.
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     CustomFieldOptionId:
       name: option_id
       in: path
@@ -173,6 +164,15 @@ components:
         default: 50
         maximum: 500
         example: 50
+    CustomFieldId:
+      name: custom_field_id
+      in: path
+      description: The ID of the custom field.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     ClientId:
       name: client_id
       in: path
@@ -190,17 +190,6 @@ components:
         default: 0
         example: 50
   schemas:
-    UpdateCustomFieldOptionRequest:
-      type: object
-      properties:
-        text:
-          type: string
-          description: The new display text. Only permitted for options belonging to non-accounting-integration custom fields.
-          example: Project Beta
-        enabled:
-          type: boolean
-          description: Enable or disable this option. Only permitted for options belonging to accounting integration custom fields (Xero, MYOB, QuickBooks, NetSuite, Business Central).
-          example: false
     CustomFieldOptionListResponse:
       type: object
       properties:
@@ -259,6 +248,17 @@ components:
           type: string
           description: The display text for this option.
           example: Project Alpha
+    UpdateCustomFieldOptionRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The new display text. Only permitted for options belonging to non-accounting-integration custom fields.
+          example: Project Beta
+        enabled:
+          type: boolean
+          description: Enable or disable this option. Only permitted for options belonging to accounting integration custom fields (Xero, MYOB, QuickBooks, NetSuite, Business Central).
+          example: false
   securitySchemes:
     BearerAuth:
       type: http

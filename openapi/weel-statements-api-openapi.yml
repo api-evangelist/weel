@@ -121,20 +121,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DailyBalance'
-    Balance:
-      type: object
-      properties:
-        balance:
-          type: number
-          description: Account balance amount as a decimal number
-          example: 123.45
-        currency:
-          type: string
-          description: ISO 4217 currency code
-          example: AUD
-      required:
-      - balance
-      - currency
     DailyBalance:
       type: object
       properties:
@@ -165,6 +151,20 @@ components:
           format: date-time
           description: The date and time when the balance was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
+    Balance:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Account balance amount as a decimal number
+          example: 123.45
+        currency:
+          type: string
+          description: ISO 4217 currency code
+          example: AUD
+      required:
+      - balance
+      - currency
   parameters:
     PaginationLimit:
       name: limit

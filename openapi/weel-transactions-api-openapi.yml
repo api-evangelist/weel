@@ -104,24 +104,17 @@ paths:
       - BearerAuth: []
 components:
   schemas:
-    TransactionBudget:
+    CustomFieldValue:
       type: object
       properties:
-        id:
+        field_name:
           type: string
-          description: The ID of the budget.
-          example: e33b7c61-5124-4ba0-b238-e4c573133715
-        name:
+          description: The name of the custom field.
+          example: Project
+        entry_text:
           type: string
-          description: The name of the budget.
-          example: Sales Team
-        budget_type:
-          type: string
-          description: The type of budget.
-          enum:
-          - BUDGET
-          - SUBSCRIPTION
-          example: BUDGET
+          description: The text value of the custom field.
+          example: Project 1
     TaxRate:
       type:
       - object
@@ -189,6 +182,76 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Transaction'
+    LineItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the line item.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        amount:
+          type: number
+          description: The amount of the line item in AUD.
+          example: 100
+        gst_amount:
+          type: number
+          description: 'The GST amount of the line item. When a `tax_rate` is applied to the line item, this is derived from `tax_rate.rate`.
+
+            '
+          example: 9.09
+        tax_rate:
+          $ref: '#/components/schemas/TaxRate'
+          description: 'The tax rate applied to the line item. This property has three states: it is absent when itemised tax rates are not enabled for the business; it is a `TaxRate` object when a tax rate could be resolved for the line item; and it is `null` when itemised tax rates are enabled for the business but a tax rate could not be resolved for the line item.
+
+            '
+        category:
+          $ref: '#/components/schemas/LineItemCategory'
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldValue'
+        description:
+          type: string
+          description: The description of the line item.
+          example: Building supplies
+    SubUser:
+      type:
+      - object
+      - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
+    LineItemCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the category.
+          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
+        name:
+          type: string
+          description: The name of the category in Weel.
+          example: Accommodation
+        code:
+          type:
+          - string
+          - 'null'
+          description: The accounting code of the category, if any.
+          example: '6668'
     Transaction:
       type: object
       properties:
@@ -294,87 +357,24 @@ components:
           format: date-time
           description: The date and time when the transaction was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
-    SubUser:
-      type:
-      - object
-      - 'null'
-      properties:
-        id:
-          type: integer
-          description: The ID of the user.
-          example: 123
-        first_name:
-          type: string
-          description: The first name of the user.
-          example: John
-        last_name:
-          type: string
-          description: The last name of the user.
-          example: Doe
-        name:
-          type: string
-          description: The full name of the user or the display name if the user has set one.
-          example: John Doe
-    CustomFieldValue:
-      type: object
-      properties:
-        field_name:
-          type: string
-          description: The name of the custom field.
-          example: Project
-        entry_text:
-          type: string
-          description: The text value of the custom field.
-          example: Project 1
-    LineItem:
+    TransactionBudget:
       type: object
       properties:
         id:
           type: string
-          description: The ID of the line item.
+          description: The ID of the budget.
           example: e33b7c61-5124-4ba0-b238-e4c573133715
-        amount:
-          type: number
-          description: The amount of the line item in AUD.
-          example: 100
-        gst_amount:
-          type: number
-          description: 'The GST amount of the line item. When a `tax_rate` is applied to the line item, this is derived from `tax_rate.rate`.
-
-            '
-          example: 9.09
-        tax_rate:
-          $ref: '#/components/schemas/TaxRate'
-          description: 'The tax rate applied to the line item. This property has three states: it is absent when itemised tax rates are not enabled for the business; it is a `TaxRate` object when a tax rate could be resolved for the line item; and it is `null` when itemised tax rates are enabled for the business but a tax rate could not be resolved for the line item.
-
-            '
-        category:
-          $ref: '#/components/schemas/LineItemCategory'
-        custom_fields:
-          type: array
-          items:
-            $ref: '#/components/schemas/CustomFieldValue'
-        description:
-          type: string
-          description: The description of the line item.
-          example: Building supplies
-    LineItemCategory:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the category.
-          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
         name:
           type: string
-          description: The name of the category in Weel.
-          example: Accommodation
-        code:
-          type:
-          - string
-          - 'null'
-          description: The accounting code of the category, if any.
-          example: '6668'
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+          - BUDGET
+          - SUBSCRIPTION
+          example: BUDGET
   parameters:
     TransactionId:
       name: transaction_id

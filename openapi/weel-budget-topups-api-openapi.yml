@@ -132,6 +132,64 @@ paths:
       - BearerAuth: []
 components:
   schemas:
+    BudgetTopupListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of topups that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of topups.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of topups.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetTopup'
+    SubUser:
+      type:
+      - object
+      - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
+    BudgetTopupCreate:
+      type: object
+      required:
+      - amount
+      - description
+      properties:
+        amount:
+          type: number
+          description: Positive values increase the available amount, negative values decrease it.
+          example: 100
+        description:
+          type: string
+          description: The description of the topup.
+          example: Additional funds for travel
+        auto_approve:
+          type: boolean
+          description: By default, topups require approval before being added to the budget. Set this to `true` to automatically add the topup to the budget.
+          example: true
     BudgetTopup:
       type: object
       properties:
@@ -177,72 +235,7 @@ components:
           format: date-time
           description: The date and time when the topup was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
-    BudgetTopupListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of topups that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of topups.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of topups.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/BudgetTopup'
-    BudgetTopupCreate:
-      type: object
-      required:
-      - amount
-      - description
-      properties:
-        amount:
-          type: number
-          description: Positive values increase the available amount, negative values decrease it.
-          example: 100
-        description:
-          type: string
-          description: The description of the topup.
-          example: Additional funds for travel
-        auto_approve:
-          type: boolean
-          description: By default, topups require approval before being added to the budget. Set this to `true` to automatically add the topup to the budget.
-          example: true
-    SubUser:
-      type:
-      - object
-      - 'null'
-      properties:
-        id:
-          type: integer
-          description: The ID of the user.
-          example: 123
-        first_name:
-          type: string
-          description: The first name of the user.
-          example: John
-        last_name:
-          type: string
-          description: The last name of the user.
-          example: Doe
-        name:
-          type: string
-          description: The full name of the user or the display name if the user has set one.
-          example: John Doe
   parameters:
-    BudgetId:
-      name: budget_id
-      in: path
-      description: The ID of the budget.
-      required: true
-      schema:
-        type: string
     BudgetMemberId:
       name: budget_member_id
       in: path
@@ -250,6 +243,13 @@ components:
       required: true
       schema:
         type: integer
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
     ClientId:
       name: client_id
       in: path
