@@ -1,0 +1,12 @@
+{
+ "url": "https://developer.letsweel.com/_bundle/openapi.json?download",
+ "requested_url": "https://developer.letsweel.com/_bundle/openapi.json?download",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 156139,
+ "sha256": "9b53aeccf82d8a323f3e1e5670ba242405687a3aaa07b90e92c592931946a0e6",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 1.0), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
