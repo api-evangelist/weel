@@ -51,14 +51,6 @@ components:
         default: 50
         maximum: 500
         example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
     PaginationOffset:
       name: offset
       in: query
@@ -67,6 +59,14 @@ components:
         type: integer
         default: 0
         example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   schemas:
     Role:
       type: object
@@ -93,25 +93,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Permission'
-    RoleListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of roles for the business.
-          example: 5
-        next:
-          type: string
-          description: The URL to the next page of roles.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of roles.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Role'
     Permission:
       type: object
       required:
@@ -131,6 +112,25 @@ components:
           - update
           - delete
           example: read
+    RoleListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of roles for the business.
+          example: 5
+        next:
+          type: string
+          description: The URL to the next page of roles.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of roles.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
   securitySchemes:
     BearerAuth:
       type: http

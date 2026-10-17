@@ -79,48 +79,33 @@ paths:
       security:
       - BearerAuth: []
 components:
+  parameters:
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   schemas:
-    StatementListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of daily balance records for the given period.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of daily balance records.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of daily balance records.
-          example: offset=0&limit=50
-        start_date:
-          type: string
-          format: date
-          description: The start date for this statement in UTC.
-          example: '2024-01-01'
-        end_date:
-          type: string
-          format: date
-          description: The end date for this statement in UTC.
-          example: '2024-01-31'
-        currency:
-          type: string
-          description: The currency of the statement.
-          example: AUD
-        opening_balance:
-          type: number
-          description: The opening balance of the statement.
-          example: 1000
-        closing_balance:
-          type: number
-          description: The closing balance of the statement.
-          example: 1000
-        daily_balances:
-          type: array
-          items:
-            $ref: '#/components/schemas/DailyBalance'
     DailyBalance:
       type: object
       properties:
@@ -165,32 +150,47 @@ components:
       required:
       - balance
       - currency
-  parameters:
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
+    StatementListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of daily balance records for the given period.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of daily balance records.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of daily balance records.
+          example: offset=0&limit=50
+        start_date:
+          type: string
+          format: date
+          description: The start date for this statement in UTC.
+          example: '2024-01-01'
+        end_date:
+          type: string
+          format: date
+          description: The end date for this statement in UTC.
+          example: '2024-01-31'
+        currency:
+          type: string
+          description: The currency of the statement.
+          example: AUD
+        opening_balance:
+          type: number
+          description: The opening balance of the statement.
+          example: 1000
+        closing_balance:
+          type: number
+          description: The closing balance of the statement.
+          example: 1000
+        daily_balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyBalance'
   securitySchemes:
     BearerAuth:
       type: http

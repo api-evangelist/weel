@@ -198,6 +198,53 @@ paths:
       security:
       - BearerAuth: []
 components:
+  parameters:
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+        example: 50
+    PaginationOffset:
+      name: offset
+      in: query
+      description: Offset to retrieve items from.
+      schema:
+        type: integer
+        default: 0
+        example: 50
+    IsDeleted:
+      name: is_deleted
+      in: query
+      description: Whether the resource is deleted.
+      schema:
+        type: boolean
+        example: false
+    BudgetId:
+      name: budget_id
+      in: path
+      description: The ID of the budget.
+      required: true
+      schema:
+        type: string
+    BudgetMemberId:
+      name: budget_member_id
+      in: path
+      description: The ID of the budget member.
+      required: true
+      schema:
+        type: integer
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   schemas:
     Invite:
       type: object
@@ -242,6 +289,46 @@ components:
           format: date-time
           description: The date and time the invite was last updated in UTC.
           example: '2026-05-01T00:00:00Z'
+    BudgetMemberListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of budget members that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of budget members.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of budget members.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetMember'
+    SubUser:
+      type:
+      - object
+      - 'null'
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+          example: 123
+        first_name:
+          type: string
+          description: The first name of the user.
+          example: John
+        last_name:
+          type: string
+          description: The last name of the user.
+          example: Doe
+        name:
+          type: string
+          description: The full name of the user or the display name if the user has set one.
+          example: John Doe
     BudgetMember:
       type: object
       properties:
@@ -326,27 +413,12 @@ components:
         - user
       - required:
         - invite
-    SubUser:
-      type:
-      - object
-      - 'null'
-      properties:
-        id:
-          type: integer
-          description: The ID of the user.
-          example: 123
-        first_name:
-          type: string
-          description: The first name of the user.
-          example: John
-        last_name:
-          type: string
-          description: The last name of the user.
-          example: Doe
-        name:
-          type: string
-          description: The full name of the user or the display name if the user has set one.
-          example: John Doe
+    PaymentType:
+      type: string
+      enum:
+      - bills
+      - cards
+      - reimbursements
     UpdateBudgetMemberRequest:
       type: object
       description: 'Updates the member''s `reset_amount`. Only valid when the budget has
@@ -361,78 +433,6 @@ components:
           example: 750
       required:
       - reset_amount
-    PaymentType:
-      type: string
-      enum:
-      - bills
-      - cards
-      - reimbursements
-    BudgetMemberListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of budget members that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of budget members.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of budget members.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/BudgetMember'
-  parameters:
-    IsDeleted:
-      name: is_deleted
-      in: query
-      description: Whether the resource is deleted.
-      schema:
-        type: boolean
-        example: false
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Number of items per page.
-      schema:
-        type: integer
-        default: 50
-        maximum: 500
-        example: 50
-    BudgetMemberId:
-      name: budget_member_id
-      in: path
-      description: The ID of the budget member.
-      required: true
-      schema:
-        type: integer
-    BudgetId:
-      name: budget_id
-      in: path
-      description: The ID of the budget.
-      required: true
-      schema:
-        type: string
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
-    PaginationOffset:
-      name: offset
-      in: query
-      description: Offset to retrieve items from.
-      schema:
-        type: integer
-        default: 0
-        example: 50
   securitySchemes:
     BearerAuth:
       type: http

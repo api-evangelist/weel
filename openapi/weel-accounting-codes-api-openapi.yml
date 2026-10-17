@@ -113,15 +113,6 @@ paths:
       - BearerAuth: []
 components:
   parameters:
-    AccountingCodeId:
-      name: accounting_code_id
-      in: path
-      description: The ID of the accounting code (GL code).
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
     PaginationLimit:
       name: limit
       in: query
@@ -131,14 +122,6 @@ components:
         default: 50
         maximum: 500
         example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
     PaginationOffset:
       name: offset
       in: query
@@ -147,23 +130,47 @@ components:
         type: integer
         default: 0
         example: 50
+    AccountingCodeId:
+      name: accounting_code_id
+      in: path
+      description: The ID of the accounting code (GL code).
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   schemas:
-    CreateAccountingCodeRequest:
+    AccountingCodeListResponse:
       type: object
-      required:
-      - code
-      - name
       properties:
-        code:
-          type: string
-          maxLength: 128
-          description: The GL code string. Used as the upsert key — if a code with this value already exists it will be updated.
-          example: '4000'
-        name:
-          type: string
-          maxLength: 150
-          description: The display name of the GL code.
-          example: Office Expenses
+        count:
+          type: integer
+          description: Total number of GL codes.
+          example: 100
+        next:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the next page.
+          example: limit=50&offset=50
+        previous:
+          type:
+          - string
+          - 'null'
+          description: Pagination cursor for the previous page.
+          example: null
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingCode'
     AccountingCode:
       type: object
       properties:
@@ -190,29 +197,22 @@ components:
           format: date-time
           description: When this GL code was last updated in UTC.
           example: '2026-01-15T10:30:00Z'
-    AccountingCodeListResponse:
+    CreateAccountingCodeRequest:
       type: object
+      required:
+      - code
+      - name
       properties:
-        count:
-          type: integer
-          description: Total number of GL codes.
-          example: 100
-        next:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the next page.
-          example: limit=50&offset=50
-        previous:
-          type:
-          - string
-          - 'null'
-          description: Pagination cursor for the previous page.
-          example: null
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountingCode'
+        code:
+          type: string
+          maxLength: 128
+          description: The GL code string. Used as the upsert key — if a code with this value already exists it will be updated.
+          example: '4000'
+        name:
+          type: string
+          maxLength: 150
+          description: The display name of the GL code.
+          example: Office Expenses
   securitySchemes:
     BearerAuth:
       type: http

@@ -132,6 +132,51 @@ paths:
       - BearerAuth: []
 components:
   schemas:
+    BudgetTopup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the topup.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        amount:
+          type: number
+          description: Positive values increase the available amount, negative values decrease it.
+          example: 100
+        description:
+          type: string
+          description: The description of the topup.
+          example: Additional funds for travel
+        status:
+          type: string
+          description: The status of the topup.
+          enum:
+          - APPROVED
+          - CANCELLED
+          - DECLINED
+          - PENDING
+          example: APPROVED
+        requested_by:
+          description: The user who requested the topup.
+          $ref: '#/components/schemas/SubUser'
+        actioned_by:
+          description: The user who actioned an approval or decline of the topup.
+          $ref: '#/components/schemas/SubUser'
+        actioned_on:
+          type: string
+          format: date-time
+          description: The date and time when the topup was actioned in UTC.
+          example: '2024-01-01T00:00:00Z'
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the topup was created in UTC.
+          example: '2024-01-01T00:00:00Z'
+        updated:
+          type: string
+          format: date-time
+          description: The date and time when the topup was last updated in UTC.
+          example: '2024-01-01T00:00:00Z'
     BudgetTopupListResponse:
       type: object
       properties:
@@ -190,59 +235,7 @@ components:
           type: boolean
           description: By default, topups require approval before being added to the budget. Set this to `true` to automatically add the topup to the budget.
           example: true
-    BudgetTopup:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the topup.
-          example: e33b7c61-5124-4ba0-b238-e4c573133715
-        amount:
-          type: number
-          description: Positive values increase the available amount, negative values decrease it.
-          example: 100
-        description:
-          type: string
-          description: The description of the topup.
-          example: Additional funds for travel
-        status:
-          type: string
-          description: The status of the topup.
-          enum:
-          - APPROVED
-          - CANCELLED
-          - DECLINED
-          - PENDING
-          example: APPROVED
-        requested_by:
-          description: The user who requested the topup.
-          $ref: '#/components/schemas/SubUser'
-        actioned_by:
-          description: The user who actioned an approval or decline of the topup.
-          $ref: '#/components/schemas/SubUser'
-        actioned_on:
-          type: string
-          format: date-time
-          description: The date and time when the topup was actioned in UTC.
-          example: '2024-01-01T00:00:00Z'
-        created:
-          type: string
-          format: date-time
-          description: The date and time when the topup was created in UTC.
-          example: '2024-01-01T00:00:00Z'
-        updated:
-          type: string
-          format: date-time
-          description: The date and time when the topup was last updated in UTC.
-          example: '2024-01-01T00:00:00Z'
   parameters:
-    BudgetMemberId:
-      name: budget_member_id
-      in: path
-      description: The ID of the budget member.
-      required: true
-      schema:
-        type: integer
     BudgetId:
       name: budget_id
       in: path
@@ -250,6 +243,13 @@ components:
       required: true
       schema:
         type: string
+    BudgetMemberId:
+      name: budget_member_id
+      in: path
+      description: The ID of the budget member.
+      required: true
+      schema:
+        type: integer
     ClientId:
       name: client_id
       in: path

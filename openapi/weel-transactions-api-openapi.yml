@@ -104,6 +104,24 @@ paths:
       - BearerAuth: []
 components:
   schemas:
+    TransactionBudget:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the budget.
+          example: e33b7c61-5124-4ba0-b238-e4c573133715
+        name:
+          type: string
+          description: The name of the budget.
+          example: Sales Team
+        budget_type:
+          type: string
+          description: The type of budget.
+          enum:
+          - BUDGET
+          - SUBSCRIPTION
+          example: BUDGET
     CustomFieldValue:
       type: object
       properties:
@@ -115,73 +133,23 @@ components:
           type: string
           description: The text value of the custom field.
           example: Project 1
-    TaxRate:
-      type:
-      - object
-      - 'null'
-      description: 'A tax rate applied to a line item. May be `null` when itemised tax rates are enabled for the business but a rate could not be resolved.
-
-        '
+    LineItemCategory:
+      type: object
       properties:
         id:
           type: string
-          format: uuid
-          description: The ID of the tax rate.
-          example: e33b7c61-5124-4ba0-b238-e4c573133715
+          description: The ID of the category.
+          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
         name:
           type: string
-          description: The name of the tax rate.
-          example: GST
-        rate:
-          type: number
-          description: The tax rate as a decimal fraction.
-          example: 0.1
+          description: The name of the category in Weel.
+          example: Accommodation
         code:
           type:
           - string
           - 'null'
-          description: The tax rate code.
-          example: GST
-        is_default_for:
-          type: string
-          description: Which transaction types the tax rate is the default for.
-          enum:
-          - DOMESTIC
-          - INTERNATIONAL
-          - BOTH
-          - NONE
-          example: DOMESTIC
-        is_enabled:
-          type: boolean
-          description: Whether the tax rate is enabled.
-          example: true
-        source:
-          type: string
-          description: The source of the tax rate.
-          enum:
-          - WEEL
-          - MANUAL
-          - ASP
-          example: WEEL
-    TransactionListResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-          description: The total number of transactions that match the query.
-          example: 100
-        next:
-          type: string
-          description: The URL to the next page of transactions.
-          example: offset=50&limit=50
-        previous:
-          type: string
-          description: The URL to the previous page of transactions.
-          example: offset=0&limit=50
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Transaction'
+          description: The accounting code of the category, if any.
+          example: '6668'
     LineItem:
       type: object
       properties:
@@ -235,23 +203,6 @@ components:
           type: string
           description: The full name of the user or the display name if the user has set one.
           example: John Doe
-    LineItemCategory:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The ID of the category.
-          example: f2c9897d-62fb-4d64-9647-3e6bf62d07c2
-        name:
-          type: string
-          description: The name of the category in Weel.
-          example: Accommodation
-        code:
-          type:
-          - string
-          - 'null'
-          description: The accounting code of the category, if any.
-          example: '6668'
     Transaction:
       type: object
       properties:
@@ -357,32 +308,74 @@ components:
           format: date-time
           description: The date and time when the transaction was last updated in UTC.
           example: '2024-01-01T00:00:00Z'
-    TransactionBudget:
-      type: object
+    TaxRate:
+      type:
+      - object
+      - 'null'
+      description: 'A tax rate applied to a line item. May be `null` when itemised tax rates are enabled for the business but a rate could not be resolved.
+
+        '
       properties:
         id:
           type: string
-          description: The ID of the budget.
+          format: uuid
+          description: The ID of the tax rate.
           example: e33b7c61-5124-4ba0-b238-e4c573133715
         name:
           type: string
-          description: The name of the budget.
-          example: Sales Team
-        budget_type:
+          description: The name of the tax rate.
+          example: GST
+        rate:
+          type: number
+          description: The tax rate as a decimal fraction.
+          example: 0.1
+        code:
+          type:
+          - string
+          - 'null'
+          description: The tax rate code.
+          example: GST
+        is_default_for:
           type: string
-          description: The type of budget.
+          description: Which transaction types the tax rate is the default for.
           enum:
-          - BUDGET
-          - SUBSCRIPTION
-          example: BUDGET
+          - DOMESTIC
+          - INTERNATIONAL
+          - BOTH
+          - NONE
+          example: DOMESTIC
+        is_enabled:
+          type: boolean
+          description: Whether the tax rate is enabled.
+          example: true
+        source:
+          type: string
+          description: The source of the tax rate.
+          enum:
+          - WEEL
+          - MANUAL
+          - ASP
+          example: WEEL
+    TransactionListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The total number of transactions that match the query.
+          example: 100
+        next:
+          type: string
+          description: The URL to the next page of transactions.
+          example: offset=50&limit=50
+        previous:
+          type: string
+          description: The URL to the previous page of transactions.
+          example: offset=0&limit=50
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
   parameters:
-    TransactionId:
-      name: transaction_id
-      in: path
-      description: The ID of the transaction.
-      required: true
-      schema:
-        type: string
     PaginationLimit:
       name: limit
       in: query
@@ -392,14 +385,6 @@ components:
         default: 50
         maximum: 500
         example: 50
-    ClientId:
-      name: client_id
-      in: path
-      description: The ID of the business.
-      required: true
-      schema:
-        type: integer
-        example: 123
     PaginationOffset:
       name: offset
       in: query
@@ -408,6 +393,21 @@ components:
         type: integer
         default: 0
         example: 50
+    TransactionId:
+      name: transaction_id
+      in: path
+      description: The ID of the transaction.
+      required: true
+      schema:
+        type: string
+    ClientId:
+      name: client_id
+      in: path
+      description: The ID of the business.
+      required: true
+      schema:
+        type: integer
+        example: 123
   securitySchemes:
     BearerAuth:
       type: http
