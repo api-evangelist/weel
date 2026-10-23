@@ -256,3 +256,9 @@ x-tagGroups:
   tags:
   - Accounting Codes
   - Categories
+x-provenance:
+  method: harvested
+  publisher: Weel
+  source: https://developer.letsweel.com/_bundle/openapi.json?download
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
