@@ -1,4 +1,4 @@
-# Weel (weel)
+# Weel
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,65 +64,137 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Weel (formerly DiviPay, operated by Weel Pty Ltd) is a Melbourne-based all-in-one spend management platform for finance teams in Australia and New Zealand, serving 4,000+ finance teams and 60,000+ card holders. Weel issues virtual and physical Visa debit cards with real-time limits and controls, and layers accounts payable automation, expense management, reimbursements, subscription management, budgets, and approval policies on top — syncing approved spend into Xero, QuickBooks, MYOB, and NetSuite. Its public developer portal documents a single RESTful Weel Open API that both reads and writes budgets, users, transactions, custom fields, accounting codes, and top-ups, authenticated with a bearer API key.
+Weel (formerly DiviPay, operated by Weel Pty Ltd) is a Melbourne-based all-in-one spend management platform for finance teams in Australia and New Zealand, serving over 4,000 finance teams and 60,000+ card holders. Weel issues virtual and physical Visa debit cards with real-time limits and controls, and layers accounts payable automation, expense management, reimbursements, subscription management, budgets, and approval policies on top. Rather than operating payment rails directly, Weel sits on the spend and AP/AR seam, syncing approved spend into Xero, QuickBooks, MYOB, and NetSuite. On the API posture, Weel ships a genuine public developer portal at developer.letsweel.com (Redocly-based) documenting a single RESTful "Weel Open API" that both reads and writes budgets, users, transactions, custom fields, accounting codes, categories, invites, and top-ups, authenticated with a bearer API key generated in-app. API access is an Enterprise-tier capability. No public webhooks, Postman collection, or OAuth flow are documented as of this review.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/weel/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/weel/refs/heads/main/apis.yml)
+**Areas:** Payments · Australia · Spend Management · Expense Management · Corporate Cards · Accounts Payable · Card Issuing · Reimbursement · Budgets · Fintech
 
-## Tags
+## Weel on APIs.io
 
-- Payments
-- Australia
-- Spend Management
-- Expense Management
-- Corporate Cards
-- Accounts Payable
-- Card Issuing
-- Reimbursements
-- Budgets
-- Fintech
+Everything profiled for Weel is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/weel/](https://apis.io/providers/weel/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (15)
 
-- **Created:** 2026-07-24
-- **Modified:** 2026-07-24
+- [Weel Accounting Codes API](https://apis.io/apis/weel/weel-accounting-codes-api/) — This group of endpoints allows you to manage GL codes (accounting codes) for your business. GL codes are used to classify expenses for bookkeeping export.…
+- [Weel Budget Members API](https://apis.io/apis/weel/weel-budget-members-api/) — This group of endpoints allows you to retrieve and manage budget member data, including listing budget members and fetching individual budget member details.
+- [Weel Budget Owners API](https://apis.io/apis/weel/weel-budget-owners-api/) — This group of endpoints allows you to retrieve and manage budget owners. A budget owner is a user (or pending invite) who can approve spend, top up, and…
+- [Weel Budget Topups API](https://apis.io/apis/weel/weel-budget-topups-api/) — This group of endpoints allows you to retrieve and create budget topups. Topups are used to increase or decrease the available amount of a budget or budget…
+- [Weel Budgets API](https://apis.io/apis/weel/weel-budgets-api/) — This group of endpoints allows you to retrieve and manage budget data, including listing budgets and fetching individual budget details. Budgets are…
+- [Weel Categories API](https://apis.io/apis/weel/weel-categories-api/) — This group of endpoints allow you to manage expense categories for your business. Categories classify transactions. System-defined categories (`custom:…
+- [Weel Custom Field Budgets API](https://apis.io/apis/weel/weel-custom-field-budgets-api/) — This group of endpoints allows you to link custom fields to budgets, controlling which budgets have a custom field assigned.
+- [Weel Custom Field Options API](https://apis.io/apis/weel/weel-custom-field-options-api/) — This group of endpoints allows you to manage the list options for a `LIST` type custom field. Options created via the Public API can be disabled or deleted.
+- [Weel Custom Fields API](https://apis.io/apis/weel/weel-custom-fields-api/) — This group of endpoints allows you to create and manage custom fields (dimensions/cost centres) for your business. Custom fields can be of type `LIST` (with…
+- [Weel Invites API](https://apis.io/apis/weel/weel-invites-api/) — This group of endpoints allows you to create, list, and cancel pending user invitations. An invite exists until the recipient accepts it, at which point…
+- [Weel Roles API](https://apis.io/apis/weel/weel-roles-api/) — This group of endpoints allows you to retrieve the roles available within a business and the permissions assigned to each role.
+- [Weel Statements API](https://apis.io/apis/weel/weel-statements-api/) — This group of endpoints allows you to retrieve a list of balances for the required period for a given business.
+- [Weel Tax Rates API](https://apis.io/apis/weel/weel-tax-rates-api/) — This group of endpoints allows you to retrieve the tax rates configured for your business. Tax rates are read-only via the Public API. For businesses with a…
+- [Weel Transactions API](https://apis.io/apis/weel/weel-transactions-api/) — This group of endpoints allows you to retrieve and manage transaction data, including listing transactions with various filters and fetching individual…
+- [Weel Users API](https://apis.io/apis/weel/weel-users-api/) — This group of endpoints allows you to retrieve and manage user data, including listing users and fetching individual user details.
 
-## APIs
+### Published properties
 
-### Weel Open API
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-The Weel Open API is a single RESTful interface that programmatically reads and writes a business's spend data in Weel — budgets, budget members, budget owners, budget top-ups, users, roles, transactions, statements, invites, categories, tax rates, accounting codes, and custom fields — to automate expense workflows and build custom integrations. OpenAPI 3.1.0, 30 documented operations across 15 resource tags, authenticated with a bearer API key (generated in-app under Settings > API). API access is available on the Enterprise plan.
+#### MCP servers (1)
 
-- **Human URL:** [https://developer.letsweel.com/openapi](https://developer.letsweel.com/openapi)
-- **Base URL:** `https://public.letsweel.com`
+Model Context Protocol servers that expose the API to agents.
 
-#### Tags
+- [weel](https://apis.io/servers/weel/weel/)
 
-- Spend Management
-- Expense Management
-- Budgets
-- Transactions
-- Card Issuing
+#### Agentic access (1)
 
-#### Properties
+Which operations an agent can call, which act, and which need a human in the loop.
 
-- [OpenAPI](openapi/weel-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Documentation](https://developer.letsweel.com/)
-- [API Reference](https://developer.letsweel.com/openapi)
-- [Authentication](https://developer.letsweel.com/getting-started/authentication)
-- [Getting Started](https://developer.letsweel.com/getting-started/authentication)
+- [Weel Agentic Access](https://apis.io/agentic-access/weel/weel-agentic-access/)
 
-## Common Properties
+#### Collections (1)
+
+Postman and Open Collection request collections.
+
+- [Weel OpenAPI](https://apis.io/collections/weel/open-weel/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Weel Openapi Overlay](https://apis.io/overlays/weel/weel-openapi-overlay/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Weel Authentication](https://apis.io/security/weel/weel-authentication/)
+- [Weel Domain Security](https://apis.io/security/weel/weel-domain-security/)
+- [Weel Trust Center](https://apis.io/security/weel/weel-trust-center/)
+- [Weel Vulnerability Disclosure](https://apis.io/security/weel/weel-vulnerability-disclosure/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://letsweel.com/)
-- [Developer Portal](https://developer.letsweel.com/)
 - [Documentation](https://developer.letsweel.com/)
-- [API Reference](https://developer.letsweel.com/openapi)
-- [Getting Started](https://developer.letsweel.com/getting-started/authentication)
+- [Getting started](https://developer.letsweel.com/getting-started/authentication)
+- [API reference](https://developer.letsweel.com/openapi)
 - [Pricing](https://letsweel.com/pricing)
-- [Change Log](https://letsweel.com/product-updates)
-- [Trust Center](https://trust.letsweel.com/)
+- [Sign up](https://app.letsweel.com/app/business-signup)
+- [Support](https://help.letsweel.com/hc/en-us)
+- [Changelog](https://letsweel.com/product-updates)
+- [Blog](https://letsweel.com/resources/the-weelhouse)
+- [Trust centre](https://trust.letsweel.com/)
+- [Terms of service](https://letsweel.com/terms)
+- [Privacy policy](https://letsweel.com/privacy)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 54.2** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 51.6 |
+| Contract governance | 18.2 |
+| Operational transparency | 26.3 |
+| Developer ergonomics | 58.9 |
+| Access clarity | 60.5 |
+
+**Agent readiness 27.3** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | paginated |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 32.1** — Payments
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/weel/](https://apis.io/providers/weel/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Weel: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/weel/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
